@@ -47,8 +47,7 @@ impl CompaniesManager {
     ///     If the requested company doesn't have a value for a property, it will not be updated or appear in the response.
     pub async fn update<P>(&self, company_id: String, properties: P) -> HubspotResult<Company<P>>
     where
-        P: Serialize,
-        P: DeserializeOwned,
+        P: Serialize + DeserializeOwned,
     {
         let req = self
             .0
