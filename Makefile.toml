@@ -1,0 +1,32 @@
+# Clean install
+[tasks.ci]
+dependencies = [
+    "format",
+    "lint",
+    "clean",
+    "build",
+    "test"
+]
+
+[tasks.clean]
+command = "cargo"
+args = ["clean"]
+
+[tasks.code-coverage]
+install_crate = "tarpaulin"
+command = "cargo"
+args = ["tarpaulin", "--ignore-tests", "--output-dir", "target/tarpaulin", "--out", "Lcov"]
+
+[tasks.format]
+install_crate = "rustfmt"
+command = "cargo"
+args = ["fmt", "--", "--emit=files"]
+
+[tasks.lint]
+install_crate = "clippy"
+command = "cargo"
+args = ["clippy"]
+
+[tasks.test]
+command = "cargo"
+args = ["test"]
