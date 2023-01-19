@@ -1,2 +1,2 @@
 # hubspot
-A rust implementation of the Hubspot CRM Api
+A rust client library for the Hubspot CRM Api

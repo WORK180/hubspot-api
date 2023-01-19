@@ -6,7 +6,7 @@ repository = "https://github.com/WORK180/hubspot"
 keywords = ["hubspot", "crm", "customer", "api"]
 categories = ["api-bindings"]
 license = "MIT"
-description = "An unofficial hupspot crm api library."
+description = "An unofficial hupspot api client library."
 include = ["src/**/*", "LICENSE-*", "README.md"]
 readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
