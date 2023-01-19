@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use time::{self, serde::rfc3339, OffsetDateTime};
+use time::{self, OffsetDateTime};
 
 use crate::objects::ObjectType;
 
@@ -18,7 +18,7 @@ pub struct Properties {
     #[serde(rename = "hs_note_body")]
     pub body: String,
     /// Required. This field marks the note's time of creation and determines where the note sits on the record timeline.
-    #[serde(rename = "hs_timestamp", with = "rfc3339")]
+    #[serde(rename = "hs_timestamp", with = "time::serde::rfc3339")]
     pub timestamp: OffsetDateTime,
 }
 
