@@ -2,7 +2,13 @@
 name = "hubspot"
 version = "0.1.0"
 edition = "2021"
-
+repository = "https://github.com/WORK180/hubspot"
+keywords = ["hubspot", "crm", "customer", "api"]
+categories = ["api-bindings"]
+license = "MIT"
+description = "An unofficial hupspot crm api library."
+include = ["src/**/*", "LICENSE-*", "README.md"]
+readme = "README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
