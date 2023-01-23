@@ -70,7 +70,7 @@ async fn get_deal_examples(hubspot: Hubspot, deal_id: &str) {
 ```
 
 ## Contributions
-At this stage we are not configured to accept contribtuions, please check back later. In the meantime please open an issue on github, and we will priorities accordingly.
+At this stage we are not configured to accept contribtuions, please check back later. In the meantime please open an issue on github, and we will prioritise accordingly.
 
 ### Local Development
 #### Tool Set
