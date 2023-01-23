@@ -69,3 +69,17 @@ async fn get_deal_examples(hubspot: Hubspot, deal_id: &str) {
 }
 ```
 
+## Contributions
+At this stage we are not configured to accept contribtuions, please check back later. In the meantime please open an issue on github, and we will priorities accordingly.
+
+### Local Development
+#### Tool Set
+##### Cargo
+
+*Install the rust tool chain in order to have cargo installed by following
+  [this](https://www.rust-lang.org/tools/install) guide.*
+
+##### Make
+
+*Install [cargo-make](https://github.com/sagiegurari/cargo-make) using 
+`cargo install cargo-make`*

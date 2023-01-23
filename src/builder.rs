@@ -31,7 +31,10 @@ impl HubspotBuilder {
             .domain
             .as_ref()
             .ok_or(HubspotBuilderError::MissingDomain)?;
-        let token = self.token.as_ref().ok_or(HubspotBuilderError::Missingtoken)?;
+        let token = self
+            .token
+            .as_ref()
+            .ok_or(HubspotBuilderError::Missingtoken)?;
         let portal_id = self
             .portal_id
             .as_ref()
