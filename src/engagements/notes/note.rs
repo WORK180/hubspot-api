@@ -4,7 +4,8 @@ use time::{self, OffsetDateTime};
 use crate::objects::ObjectType;
 
 /// Notes add information to the record timeline or associate an attachment with an object.
-/// For example, if you need to keep track of an offline conversation you had with a contact, you can add a note to their contact record with details and documents related to the conversation.
+/// For example, if you need to keep track of an offline conversation you had with a contact,
+/// you can add a note to their contact record with details and documents related to the conversation.
 /// Other users in the account will then be able to view and reference that note.
 #[derive(Serialize, Debug)]
 pub struct Note {
@@ -17,7 +18,8 @@ pub struct Properties {
     /// The note's text content, limited to 65,536 characters.
     #[serde(rename = "hs_note_body")]
     pub body: String,
-    /// Required. This field marks the note's time of creation and determines where the note sits on the record timeline.
+    /// Required. This field marks the note's time of creation and
+    /// determines where the note sits on the record timeline.
     #[serde(rename = "hs_timestamp", with = "time::serde::rfc3339")]
     pub timestamp: OffsetDateTime,
 }
@@ -37,7 +39,8 @@ pub struct AssociationTo {
 
 #[derive(Serialize, Debug, Clone)]
 pub struct AssociationType {
-    /// A unique identifier to indicate the association type between the note and the other object. You can retrieve the value through the associations API.
+    /// A unique identifier to indicate the association type between the note and the other object.
+    /// You can retrieve the value through the associations API.
     #[serde(rename = "associationTypeId")]
     pub id: String,
     #[serde(rename = "associationCategory")]

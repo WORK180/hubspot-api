@@ -7,7 +7,9 @@ pub struct Deal<A, P> {
     pub id: String,
     /// When creating a new deal, you can also associate the deal with existing records or activities.
     pub associations: A,
-    /// Deal details are stored in deal properties. There are default HubSpot deal properties, but you can also create custom properties.
+    /// Deal details are stored in deal properties.
+    /// There are default HubSpot deal properties,
+    /// but you can also create custom properties.
     pub properties: P,
 }
 
