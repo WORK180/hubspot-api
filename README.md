@@ -83,3 +83,13 @@ At this stage we are not configured to accept contribtuions, please check back l
 
 *Install [cargo-make](https://github.com/sagiegurari/cargo-make) using 
 `cargo install cargo-make`*
+
+#### Build
+
+The project has been setup with several tasks in the Makefile.
+To run these tasks execute command 
+`cargo make taskname`, where taskname is the name of task available
+in the Makefile.toml
+
+Running `cargo make ci` command runs the tasks to
+format the files, check for lint errors, clean, build(in offline mode) and run tests.
