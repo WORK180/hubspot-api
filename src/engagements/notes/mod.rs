@@ -9,11 +9,11 @@ pub use self::note::{Note, Properties};
 
 mod note;
 
-/// You can log notes on CRM objects to add information to the record timeline 
+/// You can log notes on CRM objects to add information to the record timeline
 /// or associate an attachment with an object.
-/// 
+///
 /// For example, if you need to keep track of an offline conversation you
-/// had with a contact, you can add a note to their contact record with details 
+/// had with a contact, you can add a note to their contact record with details
 /// and documents related to the conversation. Other users in the account will
 /// then be able to view and reference that note.
 ///

@@ -26,14 +26,14 @@ pub enum ObjectType {
 
 /// Objects represent types of relationships or processes.
 ///
-/// All HubSpot accounts include four standard objects: 
+/// All HubSpot accounts include four standard objects:
 /// contacts, companies, deals, and tickets.
-/// Depending on your HubSpot subscription, there are additional objects, 
+/// Depending on your HubSpot subscription, there are additional objects,
 /// such as products and custom objects.
 ///
-/// Records are individual instances of an object (e.g., John Smith is a contact). 
-/// For each record, you can store information in properties, track interactions, 
-/// and create reports. You can also make associations between records to understand 
+/// Records are individual instances of an object (e.g., John Smith is a contact).
+/// For each record, you can store information in properties, track interactions,
+/// and create reports. You can also make associations between records to understand
 /// the relationships between them
 #[derive(Clone)]
 pub struct ObjectsManager {
@@ -41,7 +41,7 @@ pub struct ObjectsManager {
     pub contacts: ContactsManager,
     /// Companies store information about an individual business or organization.
     pub companies: CompaniesManager,
-    /// Deals represent revenue opportunities with a contact or company. 
+    /// Deals represent revenue opportunities with a contact or company.
     /// They’re tracked through pipeline stages, resulting in the deal being won or lost.
     pub deals: DealsManager,
 }
