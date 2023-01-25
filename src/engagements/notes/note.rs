@@ -18,7 +18,7 @@ pub struct Properties {
     /// The note's text content, limited to 65,536 characters.
     #[serde(rename = "hs_note_body")]
     pub body: String,
-    /// Required. This field marks the note's time of creation and
+    /// This field marks the note's time of creation and
     /// determines where the note sits on the record timeline.
     #[serde(rename = "hs_timestamp", with = "time::serde::rfc3339")]
     pub timestamp: OffsetDateTime,
