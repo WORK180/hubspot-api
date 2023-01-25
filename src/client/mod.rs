@@ -11,6 +11,8 @@ pub struct HubspotClient {
     /// Your private app access token
     token: String,
     domain: String,
+    /// The portal id of your Hubspot account.
+    /// Can be used to validate requests.
     pub portal_id: String,
 }
 

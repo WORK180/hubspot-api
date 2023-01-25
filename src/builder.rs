@@ -17,15 +17,14 @@ pub struct HubspotBuilder {
 }
 
 impl HubspotBuilder {
-    /// Get instance of hubspot api builder.
+    /// Create an instance of the HubSpot API builder.
     pub fn new() -> Self {
         Default::default()
     }
 
-    /// Get instance of hubspot api.
+    /// Build the Hubspot API (entity?).
     ///
-    /// Creates instance of hubspot api and validates builder options. Valid builder options
-    /// requires all fields to be populated.
+    /// Valid builder options requires all fields to be populated.
     pub fn build(&self) -> Result<Hubspot, HubspotBuilderError> {
         let domain = self
             .domain
