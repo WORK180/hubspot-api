@@ -4,7 +4,7 @@ mod deals;
 
 use std::sync::Arc;
 
-use crate::client::HubspotClient;
+use crate::{api_configs::object::ObjectApi, client::HubspotClient};
 
 use self::companies::CompaniesManager;
 pub use self::companies::Company;
@@ -13,9 +13,6 @@ pub use self::contacts::Contact;
 use self::contacts::ContactsManager;
 
 use self::deals::DealsManager;
-pub use self::deals::{
-    Association as DealAssociations, AssociationsResults as DealAssociationsResults, Deal,
-};
 
 #[derive(Hash, Eq, PartialEq, Clone, Copy)]
 pub enum ObjectType {
@@ -45,7 +42,7 @@ impl ObjectsManager {
         Self {
             contacts: ContactsManager::new(Arc::clone(&client)),
             companies: CompaniesManager::new(Arc::clone(&client)),
-            deals: DealsManager::new(Arc::clone(&client)),
+            deals: DealsManager::new("Deals", Arc::clone(&client)),
         }
     }
 }

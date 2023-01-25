@@ -5,13 +5,18 @@ use client::HubspotClient;
 use engagements::EngagementsManager;
 use objects::ObjectsManager;
 
+mod api_configs;
 mod builder;
 mod client;
 mod engagements;
 mod objects;
 
 pub use engagements::{Note, Properties};
-pub use objects::{Company, Contact, Deal, DealAssociations, DealAssociationsResults, ObjectType};
+pub use objects::{Company, Contact, ObjectType};
+
+pub use crate::api_configs::{
+    object::OptionNotDesired, AssociationsResults, BasicApi, HubspotObject,
+};
 
 // A Rust implementation of the Hubspot CRM API
 #[derive(Clone)]
