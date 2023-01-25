@@ -22,7 +22,7 @@ impl HubspotBuilder {
         Default::default()
     }
 
-    /// Build the Hubspot API (entity?).
+    /// Build the Hubspot API Library.
     ///
     /// Valid builder options requires all fields to be populated.
     pub fn build(&self) -> Result<Hubspot, HubspotBuilderError> {

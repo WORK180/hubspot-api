@@ -12,7 +12,7 @@ pub use self::deal::Deal;
 
 mod deal;
 /// In HubSpot, deals represent transactions with contacts or companies.
-/// Deals are tracked through your sales process in pipeline stages until they're won or lost.
+///
 /// The deals manager allow you to manage create and manage deal records,
 /// as well as sync deal data between HubSpot and other systems.
 #[derive(Clone)]
