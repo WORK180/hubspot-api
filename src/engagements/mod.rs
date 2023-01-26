@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{api_configs::types::ObjectApi, client::HubspotClient, BasicApi};
+use crate::{api_configs::ApiCollection, client::HubspotClient};
 
 #[derive(Clone, Debug)]
 pub enum EngagementType {
@@ -23,38 +23,13 @@ impl ToString for EngagementType {
 #[derive(Clone)]
 pub struct EngagementsManager {
     /// Notes add information to the record timeline.
-    pub notes: EngagementManager,
+    pub notes: ApiCollection<EngagementType>,
 }
 
 impl EngagementsManager {
     pub fn new(client: Arc<HubspotClient>) -> Self {
         Self {
-            notes: EngagementManager::new(EngagementType::Notes, Arc::clone(&client)),
+            notes: ApiCollection::<EngagementType>::new(EngagementType::Notes, Arc::clone(&client)),
         }
     }
 }
-
-#[derive(Clone, Debug)]
-pub struct EngagementManager(EngagementType, Arc<HubspotClient>);
-
-impl EngagementManager {
-    fn new(name: EngagementType, client: Arc<HubspotClient>) -> Self {
-        Self(name, client)
-    }
-}
-
-impl ObjectApi<EngagementType> for EngagementManager {
-    fn name(&self) -> &EngagementType {
-        &self.0
-    }
-
-    fn client(&self) -> &Arc<HubspotClient> {
-        &self.1
-    }
-
-    fn name_str(&self) -> String {
-        self.0.to_string()
-    }
-}
-
-impl BasicApi<EngagementType> for EngagementManager {}

@@ -1,7 +1,8 @@
 use std::sync::Arc;
 
+use crate::api_configs::ApiCollection;
+use crate::client::HubspotClient;
 use crate::BasicApi;
-use crate::{api_configs::types::ObjectApi, client::HubspotClient};
 
 #[derive(Clone, Debug)]
 pub enum ObjectType {
@@ -29,44 +30,19 @@ impl ToString for ObjectType {
 #[derive(Clone)]
 pub struct ObjectsManager {
     /// Contacts store information about an individual person.
-    pub contacts: ObjectManager,
+    pub contacts: ApiCollection<ObjectType>,
     /// Companies store information about an individual business or organization.
-    pub companies: ObjectManager,
+    pub companies: ApiCollection<ObjectType>,
     /// Deals represent revenue opportunities with a contact or company. They’re tracked through pipeline stages, resulting in the deal being won or lost.
-    pub deals: ObjectManager,
+    pub deals: ApiCollection<ObjectType>,
 }
 
 impl ObjectsManager {
     pub fn new(client: Arc<HubspotClient>) -> Self {
         Self {
-            contacts: ObjectManager::new(ObjectType::Contacts, Arc::clone(&client)),
-            companies: ObjectManager::new(ObjectType::Companies, Arc::clone(&client)),
-            deals: ObjectManager::new(ObjectType::Deals, Arc::clone(&client)),
+            contacts: ApiCollection::new(ObjectType::Contacts, Arc::clone(&client)),
+            companies: ApiCollection::new(ObjectType::Companies, Arc::clone(&client)),
+            deals: ApiCollection::new(ObjectType::Deals, Arc::clone(&client)),
         }
     }
 }
-
-#[derive(Clone, Debug)]
-pub struct ObjectManager(ObjectType, Arc<HubspotClient>);
-
-impl ObjectManager {
-    fn new(name: ObjectType, client: Arc<HubspotClient>) -> Self {
-        Self(name, client)
-    }
-}
-
-impl ObjectApi<ObjectType> for ObjectManager {
-    fn name(&self) -> &ObjectType {
-        &self.0
-    }
-
-    fn client(&self) -> &Arc<HubspotClient> {
-        &self.1
-    }
-
-    fn name_str(&self) -> String {
-        self.0.to_string()
-    }
-}
-
-impl BasicApi<ObjectType> for ObjectManager {}

@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use async_trait::async_trait;
 use reqwest::Method;
 use serde::{de::DeserializeOwned, Serialize};
@@ -5,10 +7,16 @@ use serde_aux::serde_introspection::serde_introspect;
 
 use crate::{client::error::HubspotResult, HubspotUpdatedObject};
 
-use super::types::{HubspotObject, HubspotObjectToCreate, ObjectApi};
+use super::{
+    query::{build_query_string, query_begun_check},
+    types::{HubspotObject, HubspotObjectToCreate, ObjectApi},
+};
 
 #[async_trait]
-pub trait BasicApi<T>: ObjectApi<T> {
+pub trait BasicApi<T>: ObjectApi<T>
+where
+    T: Display,
+{
     /// Read a page of deals. Control what is returned via the properties query param.
     ///
     /// Properties:  A struct of the properties to be returned in the response.
@@ -182,54 +190,4 @@ pub trait BasicApi<T>: ObjectApi<T> {
 
         self.client().send(req).await
     }
-}
-
-fn query_begun_check(checkpoint: bool) -> (String, bool) {
-    if checkpoint {
-        ("&".to_string(), checkpoint)
-    } else {
-        ("?".to_string(), true)
-    }
-}
-
-fn build_query_string(
-    query_already_begun: bool,
-    properties: &[&str],
-    properties_with_history: &[&str],
-    associations: &[&str],
-    archived: bool,
-) -> String {
-    let mut query_begun = query_already_begun;
-
-    let property_query = if properties.is_empty() {
-        String::new()
-    } else {
-        query_begun = true;
-        format!("?properties={}", properties.join(","))
-    };
-    let properties_with_history_query = if properties_with_history.is_empty() {
-        String::new()
-    } else {
-        let query_check = query_begun_check(query_begun);
-        query_begun = query_check.1;
-        format!(
-            "{}propertiesWithHistory={}",
-            query_check.0,
-            properties_with_history.join(",")
-        )
-    };
-    let associations_query = if associations.is_empty() {
-        String::new()
-    } else {
-        let query_check = query_begun_check(query_begun);
-        query_begun = query_check.1;
-        format!("{}associations={}", query_check.0, associations.join(","))
-    };
-    let archived_query = if query_begun {
-        format!("&archived={}", archived)
-    } else {
-        format!("?archived={}", archived)
-    };
-
-    format!("{property_query}{properties_with_history_query}{associations_query}{archived_query}")
 }
