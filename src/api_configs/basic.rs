@@ -10,6 +10,15 @@ use super::types::{HubspotObject, HubspotObjectToCreate, ObjectApi};
 #[async_trait]
 pub trait BasicApi<T>: ObjectApi<T> {
     /// Read a page of deals. Control what is returned via the properties query param.
+    ///
+    /// Properties:  A struct of the properties to be returned in the response.
+    ///     If the requested object doesn't have a value for a property, it will not appear in the response.
+    ///
+    /// PropertiesWithHistory:  A struct of the properties with history to be returned in the response.
+    ///     If the requested object doesn't have a value for a property, it will not appear in the response.
+    ///
+    /// Associations: A struct of the associations to be returned in the response.
+    ///     If the requested object doesn't have a value for a associations, it will not appear in the response.
     async fn list<Properties, PropertiesWithHistory, Associations>(
         &self,
         limit: Option<i32>,
@@ -65,6 +74,35 @@ pub trait BasicApi<T>: ObjectApi<T> {
             .await
     }
 
+    /// Creates a new object
+    ///
+    /// Properties:  A struct of the properties to be returned in the response.
+    ///     If the requested object doesn't have a value for a property, it will not appear in the response.
+    ///
+    /// PropertiesWithHistory:  A struct of the properties with history to be returned in the response.
+    ///     If the requested object doesn't have a value for a property, it will not appear in the response.
+    ///
+    /// Associations: A struct of the associations to be returned in the response.
+    ///     If the requested object doesn't have a value for a associations, it will not appear in the response.
+    async fn create<Properties, PropertiesWithHistory, Associations>(
+        &self,
+        object_to_create: HubspotObjectToCreate<Properties, Associations>,
+    ) -> HubspotResult<HubspotObject<Properties, PropertiesWithHistory, Associations>>
+    where
+        Properties: Serialize + DeserializeOwned + Send,
+        PropertiesWithHistory: DeserializeOwned + Default,
+        Associations: Serialize + DeserializeOwned + Default + Send,
+    {
+        let req = self
+            .client()
+            .begin(Method::POST, &format!("crm/v4/objects/{}", self.path()))
+            .json::<HubspotObjectToCreate<Properties, Associations>>(&object_to_create);
+
+        self.client()
+            .send::<HubspotObject<Properties, PropertiesWithHistory, Associations>>(req)
+            .await
+    }
+
     /// Returns the object for the id.
     ///
     /// Properties:  A struct of the properties to be returned in the response.
@@ -108,8 +146,11 @@ pub trait BasicApi<T>: ObjectApi<T> {
 
     /// Updates the object for the given id.
     ///
-    /// P:  A struct of the properties to be updated and returned in the response.
+    /// Properties:  A struct of the properties to be updated and returned in the response.
     ///     If the requested object doesn't have a value for a property, it will not be updated or appear in the response.
+    ///
+    /// PropertiesWithHistory:  A struct of the properties with history to be returned in the response.
+    ///     If the requested object doesn't have a value for a property, it will not appear in the response.
     async fn update<Properties, PropertiesWithHistory>(
         &self,
         id: String,
@@ -132,24 +173,14 @@ pub trait BasicApi<T>: ObjectApi<T> {
             .await
     }
 
-    /// Creates a new object
-    async fn create<Properties, PropertiesWithHistory, Associations>(
-        &self,
-        object_to_create: HubspotObjectToCreate<Properties, Associations>,
-    ) -> HubspotResult<HubspotObject<Properties, PropertiesWithHistory, Associations>>
-    where
-        Properties: Serialize + DeserializeOwned + Send,
-        PropertiesWithHistory: DeserializeOwned + Default,
-        Associations: Serialize + DeserializeOwned + Default + Send,
-    {
-        let req = self
-            .client()
-            .begin(Method::POST, &format!("crm/v4/objects/{}", self.path()))
-            .json::<HubspotObjectToCreate<Properties, Associations>>(&object_to_create);
+    /// Move an Object identified by id to the recycling bin.
+    async fn archived(&self, id: String) -> HubspotResult<()> {
+        let req = self.client().begin(
+            Method::DELETE,
+            &format!("crm/v3/objects/{}/{}", self.path(), id,),
+        );
 
-        self.client()
-            .send::<HubspotObject<Properties, PropertiesWithHistory, Associations>>(req)
-            .await
+        self.client().send(req).await
     }
 }
 
@@ -202,7 +233,3 @@ fn build_query_string(
 
     format!("{property_query}{properties_with_history_query}{associations_query}{archived_query}")
 }
-
-// List
-
-// Archive
