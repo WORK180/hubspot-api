@@ -11,11 +11,11 @@ mod client;
 mod engagements;
 mod objects;
 
-pub use engagements::{Note, Properties};
-pub use objects::{Company, ObjectType};
+pub use engagements::EngagementType;
+pub use objects::ObjectType;
 
 pub use crate::api_configs::{
-    object::OptionNotDesired, AssociationsResults, BasicApi, HubspotObject,
+    types::OptionNotDesired, AssociationsResults, BasicApi, HubspotObject, HubspotUpdatedObject,
 };
 
 // A Rust implementation of the Hubspot CRM API

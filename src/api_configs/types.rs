@@ -1,18 +1,17 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
 use crate::client::HubspotClient;
 
-pub trait ObjectApi {
-    /// Constructor
-    fn new(client: Arc<HubspotClient>) -> Self;
-
+pub trait ObjectApi<T> {
     /// Function to get the object's name.
-    fn name(&self) -> String;
+    fn name(&self) -> &T;
+
+    fn name_str(&self) -> String;
 
     /// Returns the object's path for the api routes.
     fn path(&self) -> String {
-        self.name().to_lowercase()
+        self.name_str().to_lowercase()
     }
 
     fn client(&self) -> &Arc<HubspotClient>;
@@ -34,6 +33,30 @@ pub struct HubspotObject<Properties, PropertiesWithHistory, Associations> {
     pub archived: Option<bool>,
     #[serde(alias = "archivedAt")]
     pub archived_at: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct HubspotUpdatedObject<Properties, PropertiesWithHistory> {
+    pub id: String,
+    pub properties: Properties,
+    #[serde(alias = "propertiesWithHistory")]
+    #[serde(default)]
+    pub properties_with_history: PropertiesWithHistory,
+    #[serde(alias = "createdAt")]
+    pub created_at: Option<String>,
+    #[serde(alias = "updatedAt")]
+    pub updated_at: Option<String>,
+    pub archived: Option<bool>,
+    #[serde(alias = "archivedAt")]
+    pub archived_at: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct HubspotObjectToCreate<Properties, Associations> {
+    pub id: String,
+    pub properties: Properties,
+    #[serde(default)]
+    pub associations: Option<Associations>,
 }
 
 /// Empty struct to represent hubspot option that is not required for a specific request.

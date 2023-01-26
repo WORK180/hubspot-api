@@ -1,24 +1,24 @@
 use async_trait::async_trait;
 use reqwest::Method;
-use serde::de::DeserializeOwned;
+use serde::{de::DeserializeOwned, Serialize};
 use serde_aux::serde_introspection::serde_introspect;
 
-use crate::client::error::HubspotResult;
+use crate::{client::error::HubspotResult, HubspotUpdatedObject};
 
-use super::object::{HubspotObject, ObjectApi};
+use super::types::{HubspotObject, HubspotObjectToCreate, ObjectApi};
 
 #[async_trait]
-pub trait BasicApi: ObjectApi {
-    /// Returns the object for the deal id.
+pub trait BasicApi<T>: ObjectApi<T> {
+    /// Returns the object for the id.
     ///
     /// Properties:  A struct of the properties to be returned in the response.
-    ///     If the requested deal doesn't have a value for a property, it will not appear in the response.
+    ///     If the requested object doesn't have a value for a property, it will not appear in the response.
     ///
     /// PropertiesWithHistory:  A struct of the properties with history to be returned in the response.
-    ///     If the requested deal doesn't have a value for a property, it will not appear in the response.
+    ///     If the requested object doesn't have a value for a property, it will not appear in the response.
     ///
     /// Associations: A struct of the associations to be returned in the response.
-    ///     If the requested deal doesn't have a value for a associations, it will not appear in the response.
+    ///     If the requested object doesn't have a value for a associations, it will not appear in the response.
     async fn read<Properties, PropertiesWithHistory, Associations>(
         &self,
         id: &str,
@@ -44,7 +44,51 @@ pub trait BasicApi: ObjectApi {
             ),
         );
 
-        println!("req: {:?}", req);
+        self.client()
+            .send::<HubspotObject<Properties, PropertiesWithHistory, Associations>>(req)
+            .await
+    }
+
+    /// Updates the object for the given id.
+    ///
+    /// P:  A struct of the properties to be updated and returned in the response.
+    ///     If the requested object doesn't have a value for a property, it will not be updated or appear in the response.
+    async fn update<Properties, PropertiesWithHistory>(
+        &self,
+        id: String,
+        properties: Properties,
+    ) -> HubspotResult<HubspotUpdatedObject<Properties, PropertiesWithHistory>>
+    where
+        Properties: Serialize + DeserializeOwned + Send,
+        PropertiesWithHistory: DeserializeOwned + Default,
+    {
+        let req = self
+            .client()
+            .begin(
+                Method::PATCH,
+                &format!("crm/v3/objects/{}/{}", self.path(), id,),
+            )
+            .json::<Properties>(&properties);
+
+        self.client()
+            .send::<HubspotUpdatedObject<Properties, PropertiesWithHistory>>(req)
+            .await
+    }
+
+    /// Creates a new object
+    async fn create<Properties, PropertiesWithHistory, Associations>(
+        &self,
+        object_to_Create: HubspotObjectToCreate<Properties, Associations>,
+    ) -> HubspotResult<HubspotObject<Properties, PropertiesWithHistory, Associations>>
+    where
+        Properties: Serialize + DeserializeOwned + Send,
+        PropertiesWithHistory: DeserializeOwned + Default,
+        Associations: Serialize + DeserializeOwned + Default + Send,
+    {
+        let req = self
+            .client()
+            .begin(Method::POST, "crm/v4/objects/notes")
+            .json::<HubspotObjectToCreate<Properties, Associations>>(&object_to_Create);
 
         self.client()
             .send::<HubspotObject<Properties, PropertiesWithHistory, Associations>>(req)
@@ -106,11 +150,5 @@ fn build_query_string(
 }
 
 // List
-
-// Create
-
-// Read
-
-// Update
 
 // Archive

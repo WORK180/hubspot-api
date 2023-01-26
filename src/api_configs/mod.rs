@@ -1,6 +1,6 @@
 mod basic;
-pub mod object;
+pub mod types;
 
 pub use basic::BasicApi;
-pub use object::AssociationsResults;
-pub use object::HubspotObject;
+pub use types::AssociationsResults;
+pub use types::{HubspotObject, HubspotUpdatedObject};
