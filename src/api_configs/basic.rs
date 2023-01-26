@@ -159,7 +159,7 @@ where
     }
 
     /// Move an Object identified by id to the recycling bin.
-    async fn archived(&self, id: String) -> HubspotResult<()> {
+    async fn archive(&self, id: String) -> HubspotResult<()> {
         self.client()
             .send(self.client().begin(
                 Method::DELETE,

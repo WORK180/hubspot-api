@@ -9,6 +9,7 @@ pub enum ObjectType {
     Contacts,
     Companies,
     Deals,
+    LineItems,
 }
 
 impl ToString for ObjectType {
@@ -17,6 +18,7 @@ impl ToString for ObjectType {
             ObjectType::Contacts => "Contacts".to_string(),
             ObjectType::Companies => "Companies".to_string(),
             ObjectType::Deals => "Deals".to_string(),
+            ObjectType::LineItems => "Line Items".to_string(),
         }
     }
 }
@@ -24,9 +26,10 @@ impl ToString for ObjectType {
 impl ToPath for ObjectType {
     fn to_path(&self) -> String {
         match self {
-            ObjectType::Contacts => "Contacts".to_string().to_lowercase(),
-            ObjectType::Companies => "Companies".to_string().to_lowercase(),
-            ObjectType::Deals => "Deals".to_string().to_lowercase(),
+            ObjectType::Contacts => "contacts".to_string(),
+            ObjectType::Companies => "companies".to_string(),
+            ObjectType::Deals => "deals".to_string(),
+            ObjectType::LineItems => "line_items".to_string(),
         }
     }
 }
@@ -45,6 +48,7 @@ pub struct ObjectsManager {
     pub companies: ApiCollection<ObjectType>,
     /// Deals represent revenue opportunities with a contact or company. They’re tracked through pipeline stages, resulting in the deal being won or lost.
     pub deals: ApiCollection<ObjectType>,
+    pub line_items: ApiCollection<ObjectType>,
 }
 
 impl ObjectsManager {
@@ -53,6 +57,7 @@ impl ObjectsManager {
             contacts: ApiCollection::new(ObjectType::Contacts, Arc::clone(&client)),
             companies: ApiCollection::new(ObjectType::Companies, Arc::clone(&client)),
             deals: ApiCollection::new(ObjectType::Deals, Arc::clone(&client)),
+            line_items: ApiCollection::new(ObjectType::LineItems, Arc::clone(&client)),
         }
     }
 }

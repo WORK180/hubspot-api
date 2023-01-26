@@ -22,7 +22,7 @@ where
     fn client(&self) -> &Arc<HubspotClient>;
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct HubspotObject<Properties, PropertiesWithHistory, Associations> {
     pub id: String,
     pub properties: Properties,
@@ -31,6 +31,19 @@ pub struct HubspotObject<Properties, PropertiesWithHistory, Associations> {
     #[serde(alias = "propertiesWithHistory")]
     #[serde(default)]
     pub properties_with_history: PropertiesWithHistory,
+    #[serde(alias = "createdAt")]
+    pub created_at: Option<String>,
+    #[serde(alias = "updatedAt")]
+    pub updated_at: Option<String>,
+    pub archived: Option<bool>,
+    #[serde(alias = "archivedAt")]
+    pub archived_at: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct HubspotCreatedObject<Properties> {
+    pub id: String,
+    pub properties: Properties,
     #[serde(alias = "createdAt")]
     pub created_at: Option<String>,
     #[serde(alias = "updatedAt")]
