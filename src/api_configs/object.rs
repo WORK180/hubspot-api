@@ -5,7 +5,7 @@ use crate::client::HubspotClient;
 
 pub trait ObjectApi {
     /// Constructor
-    fn new(object_name: &str, client: Arc<HubspotClient>) -> Self;
+    fn new(client: Arc<HubspotClient>) -> Self;
 
     /// Function to get the object's name.
     fn name(&self) -> String;

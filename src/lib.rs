@@ -12,7 +12,7 @@ mod engagements;
 mod objects;
 
 pub use engagements::{Note, Properties};
-pub use objects::{Company, Contact, ObjectType};
+pub use objects::{Company, ObjectType};
 
 pub use crate::api_configs::{
     object::OptionNotDesired, AssociationsResults, BasicApi, HubspotObject,

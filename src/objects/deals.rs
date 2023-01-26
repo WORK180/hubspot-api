@@ -12,8 +12,8 @@ use crate::client::HubspotClient;
 pub struct DealsManager(String, Arc<HubspotClient>);
 
 impl ObjectApi for DealsManager {
-    fn new(object_name: &str, client: Arc<HubspotClient>) -> Self {
-        Self(object_name.to_string(), client)
+    fn new(client: Arc<HubspotClient>) -> Self {
+        Self("Deals".to_string(), client)
     }
 
     fn name(&self) -> String {

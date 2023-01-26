@@ -9,7 +9,6 @@ use crate::{api_configs::object::ObjectApi, client::HubspotClient};
 use self::companies::CompaniesManager;
 pub use self::companies::Company;
 
-pub use self::contacts::Contact;
 use self::contacts::ContactsManager;
 
 use self::deals::DealsManager;
@@ -42,7 +41,7 @@ impl ObjectsManager {
         Self {
             contacts: ContactsManager::new(Arc::clone(&client)),
             companies: CompaniesManager::new(Arc::clone(&client)),
-            deals: DealsManager::new("Deals", Arc::clone(&client)),
+            deals: DealsManager::new(Arc::clone(&client)),
         }
     }
 }
