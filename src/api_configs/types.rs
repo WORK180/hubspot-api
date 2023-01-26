@@ -1,7 +1,11 @@
 use serde::{Deserialize, Serialize};
 use std::{fmt::Display, sync::Arc};
 
-use crate::{client::HubspotClient, BasicApi};
+use crate::client::HubspotClient;
+
+pub trait ToPath {
+    fn to_path(&self) -> String;
+}
 
 pub trait ObjectApi<T>
 where
@@ -74,4 +78,21 @@ pub struct Association {
     pub id: String,
     #[serde(alias = "type")]
     pub association_type: String,
+}
+
+#[derive(Deserialize, Debug, Default)]
+pub struct ListResult<T> {
+    pub results: Vec<T>,
+    pub paging: Paging,
+}
+
+#[derive(Deserialize, Debug, Default)]
+pub struct Paging {
+    pub next: PagingNext,
+}
+
+#[derive(Deserialize, Debug, Default)]
+pub struct PagingNext {
+    pub after: String,
+    pub link: String,
 }

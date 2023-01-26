@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
+use crate::api_configs::types::ToPath;
 use crate::api_configs::ApiCollection;
 use crate::client::HubspotClient;
-use crate::BasicApi;
 
 #[derive(Clone, Debug)]
 pub enum ObjectType {
@@ -17,6 +17,16 @@ impl ToString for ObjectType {
             ObjectType::Contacts => "Contacts".to_string(),
             ObjectType::Companies => "Companies".to_string(),
             ObjectType::Deals => "Deals".to_string(),
+        }
+    }
+}
+
+impl ToPath for ObjectType {
+    fn to_path(&self) -> String {
+        match self {
+            ObjectType::Contacts => "Contacts".to_string().to_lowercase(),
+            ObjectType::Companies => "Companies".to_string().to_lowercase(),
+            ObjectType::Deals => "Deals".to_string().to_lowercase(),
         }
     }
 }

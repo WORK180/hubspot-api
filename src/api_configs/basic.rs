@@ -8,8 +8,8 @@ use serde_aux::serde_introspection::serde_introspect;
 use crate::{client::error::HubspotResult, HubspotUpdatedObject};
 
 use super::{
-    query::{build_query_string, query_begun_check},
-    types::{HubspotObject, HubspotObjectToCreate, ObjectApi},
+    query::{build_paging_query, build_query_string},
+    types::{HubspotObject, HubspotObjectToCreate, ListResult, ObjectApi},
 };
 
 #[async_trait]
@@ -32,53 +32,32 @@ where
         limit: Option<i32>,
         after: Option<&str>,
         archived: Option<bool>,
-    ) -> HubspotResult<HubspotObject<Properties, PropertiesWithHistory, Associations>>
+    ) -> HubspotResult<ListResult<HubspotObject<Properties, PropertiesWithHistory, Associations>>>
     where
         Properties: DeserializeOwned,
         PropertiesWithHistory: DeserializeOwned + Default,
         Associations: DeserializeOwned + Default,
     {
-        let mut query_begun = false;
-
-        let limit_query = match limit {
-            Some(limit) => {
-                query_begun = true;
-                format!("?{}", limit)
-            }
-            None => String::new(),
-        };
-
-        let after_query = match after {
-            Some(after) => {
-                let query_check = query_begun_check(query_begun);
-                query_begun = query_check.1;
-                format!("{}{}", query_check.0, after)
-            }
-            None => String::new(),
-        };
-
-        let req = self.client().begin(
-            Method::GET,
-            &format!(
-                "crm/v3/objects/{}{}{}{}",
-                self.path(),
-                limit_query,
-                after_query,
-                build_query_string(
-                    query_begun,
-                    serde_introspect::<Properties>(),
-                    serde_introspect::<PropertiesWithHistory>(),
-                    serde_introspect::<Associations>(),
-                    match archived {
-                        Some(archived) => archived,
-                        None => false,
-                    }
-                )
-            ),
-        );
+        let paging_query = build_paging_query(limit, after);
 
         self.client()
-            .send::<HubspotObject<Properties, PropertiesWithHistory, Associations>>(req)
+            .send::<ListResult<HubspotObject<Properties, PropertiesWithHistory, Associations>>>(
+                self.client().begin(
+                    Method::GET,
+                    &format!(
+                        "crm/v3/objects/{}{}{}",
+                        self.path(),
+                        paging_query.0,
+                        build_query_string(
+                            paging_query.1,
+                            serde_introspect::<Properties>(),
+                            serde_introspect::<PropertiesWithHistory>(),
+                            serde_introspect::<Associations>(),
+                            archived.unwrap_or(false)
+                        )
+                    ),
+                ),
+            )
             .await
     }
 
@@ -97,17 +76,16 @@ where
         object_to_create: HubspotObjectToCreate<Properties, Associations>,
     ) -> HubspotResult<HubspotObject<Properties, PropertiesWithHistory, Associations>>
     where
-        Properties: Serialize + DeserializeOwned + Send,
+        Properties: Serialize + DeserializeOwned + Send + Sync,
         PropertiesWithHistory: DeserializeOwned + Default,
-        Associations: Serialize + DeserializeOwned + Default + Send,
+        Associations: Serialize + DeserializeOwned + Default + Send + Sync,
     {
-        let req = self
-            .client()
-            .begin(Method::POST, &format!("crm/v4/objects/{}", self.path()))
-            .json::<HubspotObjectToCreate<Properties, Associations>>(&object_to_create);
-
         self.client()
-            .send::<HubspotObject<Properties, PropertiesWithHistory, Associations>>(req)
+            .send::<HubspotObject<Properties, PropertiesWithHistory, Associations>>(
+                self.client()
+                    .begin(Method::POST, &format!("crm/v4/objects/{}", self.path()))
+                    .json::<HubspotObjectToCreate<Properties, Associations>>(&object_to_create),
+            )
             .await
     }
 
@@ -131,24 +109,24 @@ where
         PropertiesWithHistory: DeserializeOwned + Default,
         Associations: DeserializeOwned + Default,
     {
-        let req = self.client().begin(
-            Method::GET,
-            &format!(
-                "crm/v3/objects/{}/{}{}",
-                self.path(),
-                id,
-                build_query_string(
-                    false,
-                    serde_introspect::<Properties>(),
-                    serde_introspect::<PropertiesWithHistory>(),
-                    serde_introspect::<Associations>(),
-                    archived
-                )
-            ),
-        );
-
         self.client()
-            .send::<HubspotObject<Properties, PropertiesWithHistory, Associations>>(req)
+            .send::<HubspotObject<Properties, PropertiesWithHistory, Associations>>(
+                self.client().begin(
+                    Method::GET,
+                    &format!(
+                        "crm/v3/objects/{}/{}{}",
+                        self.path(),
+                        id,
+                        build_query_string(
+                            false,
+                            serde_introspect::<Properties>(),
+                            serde_introspect::<PropertiesWithHistory>(),
+                            serde_introspect::<Associations>(),
+                            archived
+                        )
+                    ),
+                ),
+            )
             .await
     }
 
@@ -165,29 +143,28 @@ where
         properties: Properties,
     ) -> HubspotResult<HubspotUpdatedObject<Properties, PropertiesWithHistory>>
     where
-        Properties: Serialize + DeserializeOwned + Send,
+        Properties: Serialize + DeserializeOwned + Send + Sync,
         PropertiesWithHistory: DeserializeOwned + Default,
     {
-        let req = self
-            .client()
-            .begin(
-                Method::PATCH,
-                &format!("crm/v3/objects/{}/{}", self.path(), id,),
-            )
-            .json::<Properties>(&properties);
-
         self.client()
-            .send::<HubspotUpdatedObject<Properties, PropertiesWithHistory>>(req)
+            .send::<HubspotUpdatedObject<Properties, PropertiesWithHistory>>(
+                self.client()
+                    .begin(
+                        Method::PATCH,
+                        &format!("crm/v3/objects/{}/{}", self.path(), id,),
+                    )
+                    .json::<Properties>(&properties),
+            )
             .await
     }
 
     /// Move an Object identified by id to the recycling bin.
     async fn archived(&self, id: String) -> HubspotResult<()> {
-        let req = self.client().begin(
-            Method::DELETE,
-            &format!("crm/v3/objects/{}/{}", self.path(), id,),
-        );
-
-        self.client().send(req).await
+        self.client()
+            .send(self.client().begin(
+                Method::DELETE,
+                &format!("crm/v3/objects/{}/{}", self.path(), id,),
+            ))
+            .await
     }
 }

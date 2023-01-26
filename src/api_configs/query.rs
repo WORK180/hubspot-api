@@ -6,6 +6,29 @@ pub fn query_begun_check(checkpoint: bool) -> (String, bool) {
     }
 }
 
+pub fn build_paging_query(limit: Option<i32>, after: Option<&str>) -> (String, bool) {
+    let mut query_begun = false;
+
+    let limit_query = match limit {
+        Some(limit) => {
+            query_begun = true;
+            format!("?{}", limit)
+        }
+        None => String::new(),
+    };
+
+    let after_query = match after {
+        Some(after) => {
+            let query_check = query_begun_check(query_begun);
+            query_begun = query_check.1;
+            format!("{}{}", query_check.0, after)
+        }
+        None => String::new(),
+    };
+
+    (format!("{}{}", limit_query, after_query), query_begun)
+}
+
 pub fn build_query_string(
     query_already_begun: bool,
     properties: &[&str],
