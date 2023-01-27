@@ -53,7 +53,7 @@ impl CompaniesManager {
             .0
             .begin(
                 Method::PATCH,
-                &format!("crm/v3/objects/companies/{}", company_id,),
+                &format!("crm/v3/objects/companies/{company_id}"),
             )
             .json::<Company<P>>(&Company { properties });
 
