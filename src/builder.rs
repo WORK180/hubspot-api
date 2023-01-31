@@ -12,7 +12,7 @@ use super::client::HubspotClient;
 pub struct HubspotBuilder {
     client: Option<Client>,
     domain: Option<String>,
-    token: Option<String>,
+    key: Option<String>,
     portal_id: Option<String>,
 }
 
@@ -31,10 +31,7 @@ impl HubspotBuilder {
             .domain
             .as_ref()
             .ok_or(HubspotBuilderError::MissingDomain)?;
-        let token = self
-            .token
-            .as_ref()
-            .ok_or(HubspotBuilderError::Missingtoken)?;
+        let key = self.key.as_ref().ok_or(HubspotBuilderError::MissingKey)?;
         let portal_id = self
             .portal_id
             .as_ref()
@@ -44,7 +41,7 @@ impl HubspotBuilder {
             None => Client::new(),
         };
 
-        let client = HubspotClient::new(client, domain, token, portal_id);
+        let client = HubspotClient::new(client, domain, key, portal_id);
 
         Ok(Hubspot::new(client))
     }
@@ -57,7 +54,7 @@ impl HubspotBuilder {
 
     // The hubspot private app token
     pub fn token(mut self, token: &str) -> Self {
-        self.token = Some(token.to_owned());
+        self.key = Some(token.to_owned());
         self
     }
 
@@ -79,8 +76,8 @@ impl HubspotBuilder {
 pub enum HubspotBuilderError {
     /// Indicates builder didn't set [HubspotBuilder::domain].
     MissingDomain,
-    /// Indicates builder didn't set [HubspotBuilder::token].
-    Missingtoken,
+    /// Indicates builder didn't set [HubspotBuilder::key].
+    MissingKey,
     /// Indicates builder didn't set [HubspotBuilder::portal_id].
     MissingPortalId,
 }

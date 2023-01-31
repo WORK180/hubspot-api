@@ -1,12 +1,11 @@
-use std::{collections::HashMap, fmt::Display};
+use std::{collections::HashMap, sync::Arc};
 
-use async_trait::async_trait;
 use reqwest::Method;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
-use crate::client::error::HubspotResult;
+use crate::client::{error::HubspotResult, HubspotClient};
 
-use super::types::{HubspotCreatedObject, HubspotObject, ObjectApi};
+use super::types::{HubspotCreatedObject, HubspotObject, ObjectApi, ToPath};
 
 #[derive(Serialize, Debug)]
 pub struct BatchInputs<I> {
@@ -51,13 +50,33 @@ where
     pub links: HashMap<String, String>,
 }
 
-#[async_trait]
-pub trait BatchApi<T>: ObjectApi<T>
+// Batch Api Collection
+#[derive(Clone, Debug)]
+pub struct BatchApiCollection<T>(T, Arc<HubspotClient>);
+
+impl<T> ObjectApi<T> for BatchApiCollection<T>
 where
-    T: Display,
+    T: ToPath,
 {
+    fn name(&self) -> &T {
+        &self.0
+    }
+
+    fn client(&self) -> &Arc<HubspotClient> {
+        &self.1
+    }
+}
+
+impl<T> BatchApiCollection<T>
+where
+    T: ToPath,
+{
+    pub fn new(name: T, client: Arc<HubspotClient>) -> Self {
+        Self(name, client)
+    }
+
     /// Archive a batch of objects by ID
-    async fn archive(&self, ids: Vec<&str>) -> HubspotResult<()> {
+    pub async fn archive(&self, ids: Vec<&str>) -> HubspotResult<()> {
         self.client()
             .send(
                 self.client()
@@ -76,7 +95,7 @@ where
     }
 
     /// Creates a batch of objects
-    async fn create<Properties>(
+    pub async fn create<Properties>(
         &self,
         objects_to_create: Vec<Properties>,
     ) -> HubspotResult<HubspotCreatedObject<Properties>>
@@ -102,7 +121,7 @@ where
     }
 
     /// Read a batch of objects by internal ID
-    async fn read<Properties, PropertiesWithHistory, Associations>(
+    pub async fn read<Properties, PropertiesWithHistory, Associations>(
         &self,
         ids: Vec<&str>,
         properties: Properties,

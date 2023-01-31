@@ -10,14 +10,14 @@ dotenv = "0.15" # Or preferred
 ```
 
 ## Configuring your hubspot settings
-This library utilises Hubspot Private App tokens to authenticate your requests. You can set up a Private App by following the instructions here: https://developers.hubspot.com/docs/api/private-apps
+This library utilizes Hubspot Private App tokens to authenticate your requests. You can set up a Private App by following the instructions here: https://developers.hubspot.com/docs/api/private-apps
 
 ### Initializing your Hubspot client
 To set up your hubspot client you will need to add the following code.
 
 .env
 ```
-HUBSPOT_API_DOMAIN=api.hubapi.com
+HUBSPOT_API_DOMAIN=api.hubspot.api.com
 HUBSPOT_API_KEY=<Your-private-app-token-here>
 HUBSPOT_PORTAL_ID=<Your-hubspot-portal-id-here>
 
@@ -81,13 +81,13 @@ At this stage we are not configured to accept contribtuions, please check back l
 
 ##### Make
 
-*Install [cargo-make](https://github.com/sagiegurari/cargo-make) using 
+*Install [cargo-make](https://github.com/sagiegurari/cargo-make) using
 `cargo install cargo-make`*
 
 #### Build
 
 The project has been setup with several tasks in the Makefile.
-To run these tasks execute command 
+To run these tasks execute command
 `cargo make taskname`, where taskname is the name of task available
 in the Makefile.toml
 

@@ -10,12 +10,13 @@ mod builder;
 mod client;
 mod engagements;
 mod objects;
+mod tests;
 
 pub use engagements::EngagementType;
 pub use objects::ObjectType;
 
 pub use crate::api_configs::{
-    types::OptionNotDesired, AssociationsResults, BasicApi, HubspotObject, HubspotUpdatedObject,
+    types::OptionNotDesired, AssociationsResults, HubspotObject, HubspotUpdatedObject,
 };
 
 // A Rust implementation of the Hubspot CRM API

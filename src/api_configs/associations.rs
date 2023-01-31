@@ -1,10 +1,9 @@
-use std::fmt::Display;
+use std::{fmt::Display, sync::Arc};
 
-use async_trait::async_trait;
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 
-use crate::client::error::HubspotResult;
+use crate::client::{error::HubspotResult, HubspotClient};
 
 use super::{
     query::build_paging_query,
@@ -46,13 +45,33 @@ pub struct CreatedAssociationResult {
     pub labels: Vec<String>,
 }
 
-#[async_trait]
-pub trait AssociationsApi<T>: ObjectApi<T>
+// Association Api Collection
+#[derive(Clone, Debug)]
+pub struct AssociationsApiCollection<T>(T, Arc<HubspotClient>);
+
+impl<T> ObjectApi<T> for AssociationsApiCollection<T>
 where
-    T: Display,
+    T: ToPath,
 {
+    fn name(&self) -> &T {
+        &self.0
+    }
+
+    fn client(&self) -> &Arc<HubspotClient> {
+        &self.1
+    }
+}
+
+impl<T> AssociationsApiCollection<T>
+where
+    T: ToPath,
+{
+    pub fn new(name: T, client: Arc<HubspotClient>) -> Self {
+        Self(name, client)
+    }
+
     /// List all associations of a deal by object type. Limit 1000 per call.
-    async fn list(
+    pub async fn list(
         &self,
         id: &str,
         to_object_type: &str,
@@ -76,7 +95,7 @@ where
     }
 
     /// Set association labels between two records.
-    async fn create<O>(
+    pub async fn create<O>(
         &self,
         id: &str,
         to_object_type: O,
@@ -105,7 +124,12 @@ where
     }
 
     /// Deletes all associations between two records.
-    async fn delete<O>(&self, id: &str, to_object_type: O, to_object_id: &str) -> HubspotResult<()>
+    pub async fn delete<O>(
+        &self,
+        id: &str,
+        to_object_type: O,
+        to_object_id: &str,
+    ) -> HubspotResult<()>
     where
         O: ToPath + Send,
     {

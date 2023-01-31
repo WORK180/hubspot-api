@@ -1,22 +1,23 @@
 use serde::{Deserialize, Serialize};
-use std::{fmt::Display, sync::Arc};
+use std::sync::Arc;
 
 use crate::client::HubspotClient;
 
 pub trait ToPath {
+    /// Returns the object's path for the api routes.
     fn to_path(&self) -> String;
 }
 
 pub trait ObjectApi<T>
 where
-    T: Display,
+    T: ToPath,
 {
     /// Function to get the object's name.
     fn name(&self) -> &T;
 
     /// Returns the object's path for the api routes.
     fn path(&self) -> String {
-        self.name().to_string().to_lowercase()
+        self.name().to_path()
     }
 
     fn client(&self) -> &Arc<HubspotClient>;
