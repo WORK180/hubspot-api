@@ -71,4 +71,4 @@ async fn get_deal_examples(hubspot: Hubspot, deal_id: &str) {
 ```
 
 ## Suggestions and Issues
-In the meantime please open an issue on github, and we will prioritize accordingly.
+Please open an issue on github, and we will prioritize accordingly.
