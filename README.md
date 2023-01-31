@@ -70,27 +70,5 @@ async fn get_deal_examples(hubspot: Hubspot, deal_id: &str) {
 }
 ```
 
-## Contributions
-At this stage we are not configured to accept contributions, please check back later. In the meantime please open an issue on github, and we will prioritise accordingly.
-
-### Local Development
-#### Tool Set
-##### Cargo
-
-*Install the rust tool chain in order to have cargo installed by following
-  [this](https://www.rust-lang.org/tools/install) guide.*
-
-##### Make
-
-*Install [cargo-make](https://github.com/sagiegurari/cargo-make) using 
-`cargo install cargo-make`*
-
-#### Build
-
-The project has been setup with several tasks in the Makefile.
-To run these tasks execute command 
-`cargo make taskname`, where taskname is the name of task available
-in the Makefile.toml
-
-Running `cargo make ci` command runs the tasks to
-format the files, check for lint errors, clean, build(in offline mode) and run tests.
+## Suggestions and Issues
+In the meantime please open an issue on github, and we will prioritize accordingly.
