@@ -1,4 +1,4 @@
-use std::{fmt::Display, sync::Arc};
+use std::sync::Arc;
 
 use reqwest::Method;
 use serde::{Deserialize, Serialize};

@@ -72,7 +72,6 @@ pub struct HubspotUpdatedObject<Properties, PropertiesWithHistory> {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct HubspotObjectToCreate<Properties, Associations> {
-    pub id: String,
     pub properties: Properties,
     #[serde(default)]
     pub associations: Option<Associations>,
@@ -82,12 +81,12 @@ pub struct HubspotObjectToCreate<Properties, Associations> {
 #[derive(Deserialize, Debug, Default)]
 pub struct OptionNotDesired {}
 
-#[derive(Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct AssociationsResults {
     pub results: Vec<Association>,
 }
 
-#[derive(Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Association {
     pub id: String,
     #[serde(alias = "type")]
