@@ -33,7 +33,7 @@ impl HubspotBuilder {
         let token = self
             .token
             .as_ref()
-            .ok_or(HubspotBuilderError::Missingtoken)?;
+            .ok_or(HubspotBuilderError::MissingToken)?;
         let portal_id = self
             .portal_id
             .as_ref()
@@ -79,7 +79,7 @@ pub enum HubspotBuilderError {
     /// Indicates builder didn't set [HubspotBuilder::domain].
     MissingDomain,
     /// Indicates builder didn't set [HubspotBuilder::token].
-    Missingtoken,
+    MissingToken,
     /// Indicates builder didn't set [HubspotBuilder::portal_id].
     MissingPortalId,
 }
