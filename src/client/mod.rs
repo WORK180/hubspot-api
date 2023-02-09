@@ -9,18 +9,20 @@ pub mod error;
 pub struct HubspotClient {
     client: Client,
     /// Your private app access token
-    key: String,
+    token: String,
     domain: String,
+    /// The portal ID of your Hubspot account.
+    /// Can be used to validate requests.
     pub portal_id: String,
 }
 
 impl HubspotClient {
     /// Create HubspotClient
-    pub fn new(client: Client, domain: &str, key: &str, portal_id: &str) -> Self {
+    pub fn new(client: Client, domain: &str, token: &str, portal_id: &str) -> Self {
         Self {
             client,
             domain: domain.to_owned(),
-            key: key.to_owned(),
+            token: token.to_owned(),
             portal_id: portal_id.to_owned(),
         }
     }
@@ -29,7 +31,7 @@ impl HubspotClient {
     where
         R: DeserializeOwned,
     {
-        let res = req.bearer_auth(&self.key).send().await?;
+        let res = req.bearer_auth(&self.token).send().await?;
 
         if res.status().is_success() {
             let body = res.bytes().await?;

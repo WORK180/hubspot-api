@@ -1,30 +1,32 @@
 # Hubspot API Rust Library
-The unofficial Hubspot API Rust Library provides convenient access to the Hubspot CRM API from applications written in the Rust language.
+This unofficial Hubspot API Rust Library provides convenient access to the Hubspot CRM API from applications written in the Rust language.
 
 ## Installation
-To install the Hubspot API from crates.io. Add the following line to your `Cargo.toml`
-```
+To install the Hubspot API from crates.io, add the following line to your;
+
+_Cargo.toml_
+```toml
 [dependencies]
 hubspot = "0.1.0"
 dotenv = "0.15" # Or preferred
 ```
 
 ## Configuring your hubspot settings
-This library utilizes Hubspot Private App tokens to authenticate your requests. You can set up a Private App by following the instructions here: https://developers.hubspot.com/docs/api/private-apps
+This library utilises Hubspot Private App tokens to authenticate your requests. You can set up a Private App by following the instructions here: https://developers.hubspot.com/docs/api/private-apps
 
 ### Initializing your Hubspot client
 To set up your hubspot client you will need to add the following code.
 
-.env
+_.env_
 ```
-HUBSPOT_API_DOMAIN=api.hubspot.api.com
+HUBSPOT_API_DOMAIN=api.hubapi.com
 HUBSPOT_API_KEY=<Your-private-app-token-here>
 HUBSPOT_PORTAL_ID=<Your-hubspot-portal-id-here>
 
 ```
 
-main.rs
-```
+_main.rs_
+```rust
  let hubspot = Hubspot::builder()
         .domain(&env::var("HUBSPOT_API_DOMAIN").expect("HUBSPOT_API_DOMAIN is not set"))
         .key(&env::var("HUBSPOT_API_KEY").expect("HUBSPOT_API_KEY is not set"))
@@ -35,11 +37,10 @@ main.rs
 ```
 
 ### Usage
-Below is an example of how to read a deal by id.
+Below is an example of how to read a deal by ID.
 
-example.rs
-
-```
+_example.rs_
+```rust
 use std::io::Result;
 use hubspot::{
     Deal, DealAssociationsResults as AssociationsResults, Hubspot
@@ -69,27 +70,5 @@ async fn get_deal_examples(hubspot: Hubspot, deal_id: &str) {
 }
 ```
 
-## Contributions
-At this stage we are not configured to accept contribtuions, please check back later. In the meantime please open an issue on github, and we will prioritise accordingly.
-
-### Local Development
-#### Tool Set
-##### Cargo
-
-*Install the rust tool chain in order to have cargo installed by following
-  [this](https://www.rust-lang.org/tools/install) guide.*
-
-##### Make
-
-*Install [cargo-make](https://github.com/sagiegurari/cargo-make) using
-`cargo install cargo-make`*
-
-#### Build
-
-The project has been setup with several tasks in the Makefile.
-To run these tasks execute command
-`cargo make taskname`, where taskname is the name of task available
-in the Makefile.toml
-
-Running `cargo make ci` command runs the tasks to
-format the files, check for lint errors, clean, build(in offline mode) and run tests.
+## Suggestions and Issues
+Please open an issue on github, and we will prioritize accordingly.
