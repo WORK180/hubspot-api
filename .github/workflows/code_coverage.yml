@@ -1,0 +1,29 @@
+name: Hubspot-API-Code-Coverage
+
+on: 
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+env:
+  ENVIRONMENT: development
+  SQLX_OFFLINE: true
+
+jobs:
+  code-coverage:
+    name: Code coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/install@v0.1
+        with:
+          crate: cargo-tarpaulin
+          version: latest
+      - run: cargo tarpaulin --out Html --ignore-tests
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v1
+        with:
+          name: code-coverage-report
+          path: tarpaulin-report.html
