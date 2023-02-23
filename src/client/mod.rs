@@ -31,6 +31,7 @@ impl HubspotClient {
     where
         R: DeserializeOwned,
     {
+        println!("req {:?}", req);
         let res = req.bearer_auth(&self.token).send().await?;
 
         if res.status().is_success() {

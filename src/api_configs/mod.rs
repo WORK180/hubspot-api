@@ -184,9 +184,11 @@ where
         properties: Properties,
     ) -> HubspotResult<HubspotUpdatedObject<Properties, PropertiesWithHistory>>
     where
-        Properties: Serialize + DeserializeOwned + Send + Sync,
+        Properties: Serialize + DeserializeOwned + Send + Sync + std::fmt::Debug,
         PropertiesWithHistory: DeserializeOwned + Default,
     {
+        println!("properties: {:?}", properties);
+
         self.client()
             .send::<HubspotUpdatedObject<Properties, PropertiesWithHistory>>(
                 self.client()
