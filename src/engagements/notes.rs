@@ -1,6 +1,27 @@
 use serde::Serialize;
 use time::OffsetDateTime;
 
+/// Notes add information to the record timeline or associate an attachment with an object.
+/// For example, if you need to keep track of an offline conversation you had with a contact,
+/// you can add a note to their contact record with details and documents related to the conversation.
+/// Other users in the account will then be able to view and reference that note.
+#[derive(Serialize, Debug)]
+pub struct Note {
+    pub associations: Vec<Association>,
+    pub properties: NoteProperties,
+}
+
+#[derive(Serialize, Debug)]
+pub struct NoteProperties {
+    /// The note's text content, limited to 65,536 characters.
+    #[serde(rename = "hs_note_body")]
+    pub body: String,
+    /// This field marks the note's time of creation and
+    /// determines where the note sits on the record timeline.
+    #[serde(rename = "hs_timestamp", with = "time::serde::rfc3339")]
+    pub timestamp: OffsetDateTime,
+}
+
 #[derive(Serialize, Debug)]
 pub struct UpdateNotesProperty {
     /// The note's text content, limited to 65,536 characters.
@@ -41,6 +62,36 @@ pub enum AvailableNoteAssociation {
     Contact,
     Company,
     Deal,
+}
+
+impl NoteProperties {
+    pub fn new(body: String) -> Self {
+        Self {
+            body,
+            timestamp: OffsetDateTime::now_utc(),
+        }
+    }
+}
+
+impl Note {
+    pub fn new(properties: NoteProperties) -> Self {
+        Self {
+            properties,
+            associations: Vec::new(),
+        }
+    }
+
+    /// Attach multiple associations of the same ObjectType
+    pub fn attach_associations(
+        mut self,
+        object_type: AvailableNoteAssociation,
+        ids: Vec<String>,
+    ) -> Self {
+        for id in ids {
+            self.associations.push(Association::new(id, &object_type))
+        }
+        self
+    }
 }
 
 impl Association {
