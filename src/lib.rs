@@ -10,7 +10,6 @@ mod builder;
 mod client;
 mod engagements;
 mod objects;
-mod tests;
 
 pub use engagements::EngagementType;
 pub use objects::ObjectType;
