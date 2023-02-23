@@ -1,3 +1,5 @@
+use std::env;
+
 use crate::{builder::HubspotBuilder, Hubspot};
 
 #[allow(dead_code)]

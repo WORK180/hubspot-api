@@ -24,37 +24,39 @@ pub struct DealAssociations {
 }
 
 #[tokio::test]
+#[ignore = "This test is an integration test and can be updated to reflect your Hubspot environment."]
 async fn deal_tests() {
     let hubspot = setup::init_hubspot_for_tests();
+    let existing_deal_id = "9694916196";
 
-    //let _existing_deal = hubspot
-    //    .objects
-    //    .deals
-    //    .read::<DealProperties, OptionNotDesired, DealAssociations>("9694916196", true)
-    //    .await
-    //    .expect("Unable to read deal");
-    //
-    //let new_deal = hubspot
-    //    .objects
-    //    .deals
-    //    .create::<DealProperties, OptionNotDesired, DealAssociations>(HubspotObjectToCreate::<
-    //        DealProperties,
-    //        DealAssociations,
-    //    > {
-    //        properties: DealProperties {
-    //            hubspot_owner_id: "36743464".to_string(),
-    //            deal_regions: "AU;UK".to_string(),
-    //        },
-    //        associations: None,
-    //    })
-    //    .await
-    //    .expect("Unable to create deal");
-    //
+    let _existing_deal = hubspot
+        .objects
+        .deals
+        .read::<DealProperties, OptionNotDesired, DealAssociations>(existing_deal_id, true)
+        .await
+        .expect("Unable to read deal");
+
+    let new_deal = hubspot
+        .objects
+        .deals
+        .create::<DealProperties, OptionNotDesired, DealAssociations>(HubspotObjectToCreate::<
+            DealProperties,
+            DealAssociations,
+        > {
+            properties: DealProperties {
+                hubspot_owner_id: "36743464".to_string(),
+                deal_regions: "AU;UK".to_string(),
+            },
+            associations: None,
+        })
+        .await
+        .expect("Unable to create deal");
+
     let updated_deal = hubspot
         .objects
         .deals
         .update::<DealPropertiesToUpdate, DealProperties>(
-            "9694916196".to_string(),
+            new_deal.id,
             DealPropertiesToUpdate {
                 deal_regions: "AU;UK;US".to_string(),
             },
@@ -69,10 +71,10 @@ async fn deal_tests() {
         .await
         .expect("Unable to get list of deals");
 
-    //hubspot
-    //    .objects
-    //    .deals
-    //    .archive(updated_deal.id)
-    //    .await
-    //    .expect("Unable to archive deal");
+    hubspot
+        .objects
+        .deals
+        .archive(updated_deal.id)
+        .await
+        .expect("Unable to archive deal");
 }
