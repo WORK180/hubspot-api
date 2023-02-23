@@ -1,3 +1,5 @@
+pub mod notes;
+
 use std::sync::Arc;
 
 use crate::{

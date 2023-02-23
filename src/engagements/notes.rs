@@ -1,3 +1,6 @@
+use serde::Serialize;
+use time::OffsetDateTime;
+
 #[derive(Serialize, Debug)]
 pub struct UpdateNotesProperty {
     /// The note's text content, limited to 65,536 characters.
@@ -34,14 +37,20 @@ pub struct AssociationType {
     pub category: String,
 }
 
+pub enum AvailableNoteAssociation {
+    Contacts,
+    Companies,
+    Deals,
+}
+
 impl Association {
-    pub fn new(id: String, object_type: &ObjectType) -> Association {
+    pub fn new(id: String, object_type: &AvailableNoteAssociation) -> Association {
         Association {
             to: AssociationTo { id },
             types: vec![match object_type {
-                ObjectType::Contacts => AssociationType::hubspot_default("202"),
-                ObjectType::Companies => AssociationType::hubspot_default("190"),
-                ObjectType::Deals => AssociationType::hubspot_default("214"),
+                AvailableNoteAssociation::Contacts => AssociationType::hubspot_default("202"),
+                AvailableNoteAssociation::Companies => AssociationType::hubspot_default("190"),
+                AvailableNoteAssociation::Deals => AssociationType::hubspot_default("214"),
             }],
         }
     }

@@ -11,6 +11,7 @@ mod client;
 mod engagements;
 mod objects;
 
+pub use engagements::notes;
 pub use engagements::EngagementType;
 pub use objects::ObjectType;
 
