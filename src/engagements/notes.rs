@@ -38,9 +38,9 @@ pub struct AssociationType {
 }
 
 pub enum AvailableNoteAssociation {
-    Contacts,
-    Companies,
-    Deals,
+    Contact,
+    Company,
+    Deal,
 }
 
 impl Association {
@@ -48,9 +48,9 @@ impl Association {
         Association {
             to: AssociationTo { id },
             types: vec![match object_type {
-                AvailableNoteAssociation::Contacts => AssociationType::hubspot_default("202"),
-                AvailableNoteAssociation::Companies => AssociationType::hubspot_default("190"),
-                AvailableNoteAssociation::Deals => AssociationType::hubspot_default("214"),
+                AvailableNoteAssociation::Contact => AssociationType::hubspot_default("202"),
+                AvailableNoteAssociation::Company => AssociationType::hubspot_default("190"),
+                AvailableNoteAssociation::Deal => AssociationType::hubspot_default("214"),
             }],
         }
     }
