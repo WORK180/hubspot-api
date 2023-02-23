@@ -111,9 +111,7 @@ where
                     > {
                         inputs: objects_to_create
                             .into_iter()
-                            .map(|p| BatchPropertiesInputs {
-                                properties: p.clone(),
-                            })
+                            .map(|properties| BatchPropertiesInputs { properties })
                             .collect(),
                     }),
             )

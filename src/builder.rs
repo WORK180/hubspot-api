@@ -74,6 +74,7 @@ impl HubspotBuilder {
 }
 
 /// The error type which is returned from building a [Hubspot].
+#[allow(clippy::enum_variant_names)]
 #[derive(Debug, PartialOrd, PartialEq)]
 pub enum HubspotBuilderError {
     /// Indicates builder didn't set [HubspotBuilder::domain].

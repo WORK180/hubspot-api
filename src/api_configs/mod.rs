@@ -54,7 +54,7 @@ where
             name: name.clone(),
             client: Arc::clone(&client),
             associations: AssociationsApiCollection::new(name.clone(), Arc::clone(&client)),
-            batch: BatchApiCollection::new(name.clone(), Arc::clone(&client)),
+            batch: BatchApiCollection::new(name, Arc::clone(&client)),
         }
     }
 
