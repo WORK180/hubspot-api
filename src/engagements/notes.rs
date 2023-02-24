@@ -1,7 +1,7 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct NoteProperties {
     /// The note's text content, limited to 65,536 characters.
     #[serde(rename = "hs_note_body")]
