@@ -6,14 +6,17 @@ pub mod types;
 use std::sync::Arc;
 
 pub use types::AssociationsResults;
-pub use types::{HubspotObject, HubspotUpdatedObject};
+pub use types::{
+    AssociationType, HubspotObject, HubspotObjectToCreate, HubspotUpdatedObject,
+    KnownBuiltInAssociations,
+};
 
 use crate::client::HubspotClient;
 
 use self::associations::AssociationsApiCollection;
 use self::batch::BatchApiCollection;
 use self::query::{build_paging_query, build_query_string};
-use self::types::{HubspotObjectToCreate, ListResult, ObjectApi, ToPath};
+use self::types::{ListResult, ObjectApi, ToPath};
 
 use reqwest::Method;
 use serde::{de::DeserializeOwned, Serialize};
