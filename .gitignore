@@ -11,3 +11,4 @@ Cargo.lock
 
 # development files
 src/tests
+.env*

@@ -70,11 +70,69 @@ pub struct HubspotUpdatedObject<Properties, PropertiesWithHistory> {
     pub archived_at: Option<String>,
 }
 
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct CreateAssociation {
+    #[serde(rename = "to")]
+    pub to: AssociationTo,
+    pub types: Vec<AssociationType>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct AssociationTo {
+    /// The ID of the record that you want to associate the note with.
+    pub id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+pub struct AssociationType {
+    /// A unique identifier to indicate the association type between the note and the other object.
+    /// You can retrieve the value through the associations API.
+    #[serde(rename = "associationTypeId")]
+    pub id: String,
+    #[serde(rename = "associationCategory")]
+    pub category: String,
+}
+
 #[derive(Serialize, Deserialize, Debug)]
-pub struct HubspotObjectToCreate<Properties, Associations> {
+pub struct HubspotObjectToCreate<Properties> {
     pub properties: Properties,
     #[serde(default)]
-    pub associations: Option<Associations>,
+    pub associations: Vec<CreateAssociation>,
+}
+
+impl<Properties> HubspotObjectToCreate<Properties> {
+    pub fn new(properties: Properties) -> Self {
+        Self {
+            properties,
+            associations: Vec::new(),
+        }
+    }
+
+    /// Attach multiple associations of the same known built in associations
+    pub fn attach_built_in_associations(
+        mut self,
+        association_type: KnownBuiltInAssociations,
+        ids: Vec<String>,
+    ) -> Self {
+        for id in ids {
+            self.associations
+                .push(CreateAssociation::new_built_in(id, &association_type))
+        }
+        self
+    }
+
+    /// Attach multiple associations of the same custom association type
+    pub fn attach_associations(
+        mut self,
+        association_type: AssociationType,
+        ids: Vec<String>,
+    ) -> Self {
+        for id in ids {
+            self.associations
+                .push(CreateAssociation::new(id, &association_type))
+        }
+        self
+    }
 }
 
 /// Empty struct to represent hubspot option that is not required for a specific request.
@@ -108,4 +166,48 @@ pub struct Paging {
 pub struct PagingNext {
     pub after: String,
     pub link: String,
+}
+
+pub enum KnownBuiltInAssociations {
+    NoteToContact,
+    NoteToCompany,
+    NoteToDeal,
+}
+
+impl CreateAssociation {
+    pub fn new_built_in(id: String, association_type: &KnownBuiltInAssociations) -> Self {
+        Self {
+            to: AssociationTo { id },
+            types: vec![association_type.build()],
+        }
+    }
+
+    pub fn new(id: String, association_type: &AssociationType) -> Self {
+        Self {
+            to: AssociationTo { id },
+            types: vec![association_type.clone()],
+        }
+    }
+}
+
+impl KnownBuiltInAssociations {
+    pub fn build(&self) -> AssociationType {
+        AssociationType {
+            id: match self {
+                KnownBuiltInAssociations::NoteToContact => "202".to_string(),
+                KnownBuiltInAssociations::NoteToCompany => "190".to_string(),
+                KnownBuiltInAssociations::NoteToDeal => "214".to_string(),
+            },
+            category: "HUBSPOT_DEFINED".to_string(),
+        }
+    }
+}
+
+impl AssociationType {
+    pub fn new(id: &str, category: &str) -> Self {
+        Self {
+            id: id.to_string(),
+            category: category.to_string(),
+        }
+    }
 }

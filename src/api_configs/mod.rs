@@ -114,18 +114,18 @@ where
     ///     If the requested object doesn't have a value for a associations, it will not appear in the response.
     pub async fn create<Properties, PropertiesWithHistory, Associations>(
         &self,
-        object_to_create: HubspotObjectToCreate<Properties, Associations>,
+        object_to_create: HubspotObjectToCreate<Properties>,
     ) -> HubspotResult<HubspotObject<Properties, PropertiesWithHistory, Associations>>
     where
         Properties: Serialize + DeserializeOwned + Send + Sync,
         PropertiesWithHistory: DeserializeOwned + Default,
-        Associations: Serialize + DeserializeOwned + Default + Send + Sync,
+        Associations: DeserializeOwned + Default + Send + Sync,
     {
         self.client()
             .send::<HubspotObject<Properties, PropertiesWithHistory, Associations>>(
                 self.client()
                     .begin(Method::POST, &format!("crm/v4/objects/{}", self.path()))
-                    .json::<HubspotObjectToCreate<Properties, Associations>>(&object_to_create),
+                    .json::<HubspotObjectToCreate<Properties>>(&object_to_create),
             )
             .await
     }
