@@ -5,10 +5,11 @@ pub mod types;
 
 use std::sync::Arc;
 
-pub use types::{AssociationType, CreateAssociation, HubspotRecord, KnownBuiltInAssociations};
+pub use types::{
+    AssociationType, CreateAssociation, HubspotRecord, KnownBuiltInAssociations, OptionNotDesired,
+};
 
 use crate::client::HubspotClient;
-use crate::OptionNotDesired;
 
 use self::associations::AssociationsApiCollection;
 use self::batch::BatchApiCollection;

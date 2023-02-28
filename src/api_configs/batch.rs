@@ -3,12 +3,9 @@ use std::{collections::HashMap, sync::Arc};
 use reqwest::Method;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
-use crate::{
-    client::{error::HubspotResult, HubspotClient},
-    OptionNotDesired,
-};
+use crate::client::{error::HubspotResult, HubspotClient};
 
-use super::types::{HubspotRecord, ObjectApi, ToPath};
+use super::types::{HubspotRecord, ObjectApi, OptionNotDesired, ToPath};
 
 /// A wrapper type for batch inputs.
 #[derive(Serialize, Debug)]
