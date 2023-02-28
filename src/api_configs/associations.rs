@@ -10,14 +10,18 @@ use super::{
     types::{ListResult, ObjectApi, ToPath},
 };
 
+/// An association linking an object `to_object_id` to the parent object.
 #[derive(Deserialize, Debug)]
 pub struct Association {
+    /// The id of the associated record.
     #[serde(alias = "toObjectId")]
     pub to_object_id: String,
+    /// The association type to reflect the relationship between the two records.
     #[serde(alias = "associationTypes")]
     pub association_types: AssociationTypes,
 }
 
+/// An association type that represents the relationship between two records.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AssociationTypes {
     pub category: String,
@@ -26,6 +30,7 @@ pub struct AssociationTypes {
     pub label: String,
 }
 
+/// A struct for creating new associations.
 #[derive(Serialize, Debug)]
 pub struct AssociationCreationDetails {
     #[serde(alias = "associationCategory")]
@@ -34,6 +39,7 @@ pub struct AssociationCreationDetails {
     pub type_id: AssociationTypes,
 }
 
+/// A  Hubspot result type for a created association.
 #[derive(Deserialize, Debug)]
 pub struct CreatedAssociationResult {
     #[serde(alias = "fromObjectTypeId")]
@@ -66,11 +72,12 @@ impl<T> AssociationsApiCollection<T>
 where
     T: ToPath,
 {
+    /// Constructs a new AssociationsApiCollection for an object type.
     pub fn new(name: T, client: Arc<HubspotClient>) -> Self {
         Self(name, client)
     }
 
-    /// List all associations of a deal by object type. Limit 1000 per call.
+    /// List all associations of a record by object type. Limit 1000 per call.
     pub async fn list(
         &self,
         id: &str,

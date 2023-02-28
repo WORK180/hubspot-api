@@ -7,21 +7,26 @@ use crate::client::{error::HubspotResult, HubspotClient};
 
 use super::types::{HubspotBaseObject, HubspotObject, ObjectApi, ToPath};
 
+/// A wrapper type for batch inputs.
 #[derive(Serialize, Debug)]
 pub struct BatchInputs<I> {
     pub inputs: Vec<I>,
 }
 
+/// A struct of record Ids for the batch api.
+/// eg. Batch read.
 #[derive(Serialize, Debug)]
 pub struct BatchIdInputs {
     pub id: String,
 }
 
+/// A wrapper type for batch properties inputs
 #[derive(Serialize, Debug)]
 pub struct BatchPropertiesInputs<Properties> {
     pub properties: Properties,
 }
 
+/// The required inputs for a Batch Read request/
 #[derive(Serialize, Debug)]
 pub struct BatchReadInputs<Properties, PropertiesWithHistory, Associations> {
     pub properties: Properties,
@@ -33,6 +38,7 @@ pub struct BatchReadInputs<Properties, PropertiesWithHistory, Associations> {
     pub inputs: Vec<BatchIdInputs>,
 }
 
+/// A Hubspot result type for a batch request.
 #[derive(Deserialize, Debug, Default)]
 pub struct BatchResult<Properties, PropertiesWithHistory, Associations>
 where
@@ -71,6 +77,7 @@ impl<T> BatchApiCollection<T>
 where
     T: ToPath,
 {
+    /// Constructs a new BatchApiCollection for a Hubspot Object
     pub fn new(name: T, client: Arc<HubspotClient>) -> Self {
         Self(name, client)
     }

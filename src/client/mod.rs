@@ -27,11 +27,11 @@ impl HubspotClient {
         }
     }
 
+    /// Send a hubspot request
     pub async fn send<R>(&self, req: RequestBuilder) -> HubspotResult<R>
     where
         R: DeserializeOwned,
     {
-        println!("req {:?}", req);
         let res = req.bearer_auth(&self.token).send().await?;
 
         if res.status().is_success() {
