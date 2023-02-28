@@ -5,7 +5,7 @@ pub mod types;
 
 use std::sync::Arc;
 
-pub use types::{AssociationType, HubspotRecord, KnownBuiltInAssociations};
+pub use types::{AssociationType, CreateAssociation, HubspotRecord, KnownBuiltInAssociations};
 
 use crate::client::HubspotClient;
 use crate::OptionNotDesired;
@@ -13,7 +13,7 @@ use crate::OptionNotDesired;
 use self::associations::AssociationsApiCollection;
 use self::batch::BatchApiCollection;
 use self::query::{build_paging_query, build_query_string};
-use self::types::{CreateAssociation, ListResult, ObjectApi, ToPath};
+use self::types::{ListResult, ObjectApi, ToPath};
 
 use reqwest::Method;
 use serde::{de::DeserializeOwned, Serialize};

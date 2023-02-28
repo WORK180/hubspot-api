@@ -16,7 +16,7 @@ pub use engagements::EngagementType;
 pub use objects::ObjectType;
 
 pub use crate::api_configs::{
-    types::{AssociationResults, OptionNotDesired},
+    types::{AssociationResults, CreateAssociation, OptionNotDesired},
     AssociationType, HubspotRecord, KnownBuiltInAssociations,
 };
 
