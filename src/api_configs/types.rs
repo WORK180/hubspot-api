@@ -151,8 +151,9 @@ pub struct AssociationType {
 pub struct OptionNotDesired {}
 
 /// A list of association results
+/// Recommended use when creating the Association Struct.
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct AssociationsResults {
+pub struct AssociationResults {
     pub results: Vec<Association>,
 }
 

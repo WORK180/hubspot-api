@@ -16,7 +16,8 @@ pub use engagements::EngagementType;
 pub use objects::ObjectType;
 
 pub use crate::api_configs::{
-    types::OptionNotDesired, AssociationType, HubspotRecord, KnownBuiltInAssociations,
+    types::{AssociationResults, OptionNotDesired},
+    AssociationType, HubspotRecord, KnownBuiltInAssociations,
 };
 
 // A Rust implementation of the Hubspot CRM API
