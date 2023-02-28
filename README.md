@@ -57,8 +57,8 @@ pub struct DealProperties {
 // This is where you specify which objects associations you want returned by hubspot
 #[derive(Deserialize, Debug)]
 pub struct DealAssociations {
-    pub companies: AssociationsResults,
-    pub contacts: AssociationsResults,
+    pub companies: Option<AssociationsResults>,
+    pub contacts: Option<AssociationsResults>,
 }
 
 async fn get_deal_examples(hubspot: Hubspot, deal_id: &str) {
