@@ -181,17 +181,16 @@ where
     ///
     /// PropertiesWithHistory:  A struct of the properties with history to be returned in the response.
     ///     If the requested object doesn't have a value for a property, it will not appear in the response.
-    pub async fn update<Properties, PropertiesWithHistory>(
+    pub async fn update<PropertiesToUpdate, Properties, PropertiesWithHistory>(
         &self,
         id: String,
-        properties: Properties,
+        properties: PropertiesToUpdate,
     ) -> HubspotResult<HubspotUpdatedObject<Properties, PropertiesWithHistory>>
     where
+        PropertiesToUpdate: Serialize,
         Properties: Serialize + DeserializeOwned + Send + Sync + std::fmt::Debug,
         PropertiesWithHistory: DeserializeOwned + Default,
     {
-        println!("properties: {:?}", properties);
-
         self.client()
             .send::<HubspotUpdatedObject<Properties, PropertiesWithHistory>>(
                 self.client()
@@ -199,7 +198,7 @@ where
                         Method::PATCH,
                         &format!("crm/v3/objects/{}/{}", self.path(), id,),
                     )
-                    .json::<Properties>(&properties),
+                    .json::<PropertiesToUpdate>(&properties),
             )
             .await
     }
