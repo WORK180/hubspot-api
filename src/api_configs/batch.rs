@@ -3,39 +3,87 @@ use std::{collections::HashMap, sync::Arc};
 use reqwest::Method;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
-use crate::client::{error::HubspotResult, HubspotClient};
+use crate::{
+    client::{error::HubspotResult, HubspotClient},
+    OptionNotDesired,
+};
 
-use super::types::{HubspotBaseObject, HubspotObject, ObjectApi, ToPath};
+use super::types::{HubspotRecord, ObjectApi, ToPath};
 
 /// A wrapper type for batch inputs.
 #[derive(Serialize, Debug)]
 pub struct BatchInputs<I> {
+    /// The inputs for a Batch request.
     pub inputs: Vec<I>,
+}
+
+impl<I> BatchInputs<I> {
+    /// Constructs a new BatchInput
+    pub fn new(inputs: Vec<I>) -> BatchInputs<I> {
+        BatchInputs { inputs }
+    }
+}
+
+/// A struct of record Ids for the update batch api.
+/// eg. Batch update.
+#[derive(Serialize, Debug)]
+pub struct BatchUpdateInput<Properties> {
+    /// Hubspot record Ids for a batch request.
+    pub id: String,
+    /// The property inputs for a batch request
+    pub properties: Properties,
+}
+
+impl<Properties: Clone> BatchUpdateInput<Properties> {
+    /// Constructs a new BatchUpdateInput
+    pub fn new(id: &str, properties: Properties) -> BatchUpdateInput<Properties> {
+        BatchUpdateInput {
+            id: id.to_string(),
+            properties,
+        }
+    }
+
+    /// Constructs a new vec of BatchUpdateInputs from a list of record IDs.
+    pub fn new_batch(
+        ids: Vec<String>,
+        properties: Properties,
+    ) -> Vec<BatchUpdateInput<Properties>> {
+        ids.iter()
+            .map(|id| BatchUpdateInput::new(id, properties.clone()))
+            .collect()
+    }
 }
 
 /// A struct of record Ids for the batch api.
 /// eg. Batch read.
 #[derive(Serialize, Debug)]
-pub struct BatchIdInputs {
+pub struct BatchIdInput {
+    /// Hubspot record Ids for a batch request.
     pub id: String,
 }
 
 /// A wrapper type for batch properties inputs
 #[derive(Serialize, Debug)]
-pub struct BatchPropertiesInputs<Properties> {
+pub struct BatchPropertiesInput<Properties> {
+    /// The property inputs for a batch request
     pub properties: Properties,
 }
 
-/// The required inputs for a Batch Read request/
+/// The required inputs for a Batch Read request.
 #[derive(Serialize, Debug)]
 pub struct BatchReadInputs<Properties, PropertiesWithHistory, Associations> {
+    /// The record ids to return for a batch request.
+    pub inputs: Vec<BatchIdInput>,
+    /// The record properties for a batch request
     pub properties: Properties,
+    /// The record properties with history for a batch request
     #[serde(alias = "propertiesWithHistory")]
     #[serde(default)]
     pub properties_with_history: PropertiesWithHistory,
+    /// The record associations for a batch request
     pub associations: Associations,
+    /// Whether to return only results that have been archived.
     pub archived: bool,
-    pub inputs: Vec<BatchIdInputs>,
 }
 
 /// A Hubspot result type for a batch request.
@@ -45,14 +93,20 @@ where
     PropertiesWithHistory: Default,
     Associations: Default,
 {
+    /// The status result of the batch request.
     pub status: String,
-    pub results: Vec<HubspotObject<Properties, PropertiesWithHistory, Associations>>,
+    /// The result objects of the batch request.
+    pub results: Vec<HubspotRecord<Properties, PropertiesWithHistory, Associations>>,
     #[serde(alias = "requestedAt")]
+    /// The time the batch request was requested.
     pub requested_at: String,
+    /// The time the batch request started.
     #[serde(alias = "startedAt")]
     pub started_at: String,
+    /// The time the batch request was completed at.
     #[serde(alias = "completedAt")]
     pub completed_at: String,
+    /// Links for the batch request.
     pub links: HashMap<String, String>,
 }
 
@@ -91,10 +145,10 @@ where
                         Method::DELETE,
                         &format!("crm/v3/objects/{}/batch/archive", self.path()),
                     )
-                    .json::<BatchInputs<BatchIdInputs>>(&BatchInputs::<BatchIdInputs> {
+                    .json::<BatchInputs<BatchIdInput>>(&BatchInputs::<BatchIdInput> {
                         inputs: ids
                             .iter()
-                            .map(|i| BatchIdInputs { id: i.to_string() })
+                            .map(|i| BatchIdInput { id: i.to_string() })
                             .collect(),
                     }),
             )
@@ -105,20 +159,20 @@ where
     pub async fn create<Properties>(
         &self,
         objects_to_create: Vec<Properties>,
-    ) -> HubspotResult<HubspotBaseObject<Properties>>
+    ) -> HubspotResult<HubspotRecord<Properties, OptionNotDesired, OptionNotDesired>>
     where
         Properties: Serialize + DeserializeOwned + Send + Sync + Clone,
     {
         self.client()
-            .send::<HubspotBaseObject<Properties>>(
+            .send::<HubspotRecord<Properties, OptionNotDesired, OptionNotDesired>>(
                 self.client()
                     .begin(Method::POST, &format!("crm/v4/objects/{}", self.path()))
-                    .json::<BatchInputs<BatchPropertiesInputs<Properties>>>(&BatchInputs::<
-                        BatchPropertiesInputs<Properties>,
+                    .json::<BatchInputs<BatchPropertiesInput<Properties>>>(&BatchInputs::<
+                        BatchPropertiesInput<Properties>,
                     > {
                         inputs: objects_to_create
                             .into_iter()
-                            .map(|properties| BatchPropertiesInputs { properties })
+                            .map(|properties| BatchPropertiesInput { properties })
                             .collect(),
                     }),
             )
@@ -154,13 +208,35 @@ where
                             archived: archived.unwrap_or(false),
                             inputs: ids
                                 .into_iter()
-                                .map(|i| BatchIdInputs { id: i.to_string() })
-                                .collect::<Vec<BatchIdInputs>>(),
+                                .map(|i| BatchIdInput { id: i.to_string() })
+                                .collect::<Vec<BatchIdInput>>(),
                         },
                     ),
             )
             .await
     }
 
-    // Update
+    // Update a batch of objects
+    pub async fn update<Properties, PropertiesWithHistory>(
+        &self,
+        ids: Vec<String>,
+        properties: Properties,
+    ) -> HubspotResult<BatchResult<Properties, PropertiesWithHistory, OptionNotDesired>>
+    where
+        Properties: Serialize + DeserializeOwned + Send + Sync + Clone,
+        PropertiesWithHistory: DeserializeOwned + Default,
+    {
+        self.client()
+            .send::<BatchResult<Properties, PropertiesWithHistory, OptionNotDesired>>(
+                self.client()
+                    .begin(
+                        Method::PATCH,
+                        &format!("/crm/v3/objects/{}/batch/update", self.path()),
+                    )
+                    .json::<BatchInputs<BatchUpdateInput<Properties>>>(&BatchInputs::new(
+                        BatchUpdateInput::new_batch(ids, properties),
+                    )),
+            )
+            .await
+    }
 }

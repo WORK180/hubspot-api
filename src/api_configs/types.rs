@@ -3,11 +3,13 @@ use std::sync::Arc;
 
 use crate::client::HubspotClient;
 
+/// ToPath trait represents a Hubspot object's path.
 pub trait ToPath {
     /// Returns the object's path for the api routes.
     fn to_path(&self) -> String;
 }
 
+/// The common functionality for all objects within the Hubspot api.
 pub trait ObjectApi<T>
 where
     T: ToPath,
@@ -23,102 +25,70 @@ where
     fn client(&self) -> &Arc<HubspotClient>;
 }
 
+/// A representation of a generic Hubspot record. Regardless of object type.
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct HubspotObject<Properties, PropertiesWithHistory, Associations> {
+pub struct HubspotRecord<Properties, PropertiesWithHistory, Associations> {
+    /// The record's ID.
     pub id: String,
+    /// The requested properties for the record.
     pub properties: Properties,
     #[serde(default)]
+    /// The requested associations for the record
     pub associations: Associations,
+    /// The requested properties with history for the record
     #[serde(alias = "propertiesWithHistory")]
     #[serde(default)]
     pub properties_with_history: PropertiesWithHistory,
+    /// The dateTime that the record was created.
     #[serde(alias = "createdAt")]
     pub created_at: Option<String>,
+    /// The dateTime that the record was updated.
     #[serde(alias = "updatedAt")]
     pub updated_at: Option<String>,
+    /// Whether or not the record is archived.
     pub archived: Option<bool>,
+    /// The dateTime that the record was archived.
     #[serde(alias = "archivedAt")]
     pub archived_at: Option<String>,
 }
 
-/// Hubspot Object with no associations or properties_with_history
-#[derive(Serialize, Deserialize, Debug)]
-pub struct HubspotBaseObject<Properties> {
-    pub id: String,
-    pub properties: Properties,
-    #[serde(alias = "createdAt")]
-    pub created_at: Option<String>,
-    #[serde(alias = "updatedAt")]
-    pub updated_at: Option<String>,
-    pub archived: Option<bool>,
-    #[serde(alias = "archivedAt")]
-    pub archived_at: Option<String>,
-}
-
-impl<Properties> HubspotBaseObject<Properties> {
-    pub fn new_outbound(properties: Properties) -> HubspotBaseObject<Properties> {
-        HubspotBaseObject {
+/// Implementation of HubspotRecord where only Properties are required.
+impl<Properties> HubspotRecord<Properties, OptionNotDesired, OptionNotDesired> {
+    /// Create a new HubspotRecord with the given properties and default values for all other fields.
+    /// Suggested use for the Core Update endpoint.
+    pub fn with_properties(
+        properties: Properties,
+    ) -> HubspotRecord<Properties, OptionNotDesired, OptionNotDesired> {
+        HubspotRecord {
             properties,
             id: String::new(),
             created_at: None,
             updated_at: None,
             archived: None,
             archived_at: None,
+            associations: OptionNotDesired::default(),
+            properties_with_history: OptionNotDesired::default(),
         }
     }
 }
 
-#[derive(Deserialize, Debug)]
-pub struct HubspotUpdatedObject<Properties, PropertiesWithHistory> {
-    pub id: String,
-    pub properties: Properties,
-    #[serde(alias = "propertiesWithHistory")]
-    #[serde(default)]
-    pub properties_with_history: PropertiesWithHistory,
-    #[serde(alias = "createdAt")]
-    pub created_at: Option<String>,
-    #[serde(alias = "updatedAt")]
-    pub updated_at: Option<String>,
-    pub archived: Option<bool>,
-    #[serde(alias = "archivedAt")]
-    pub archived_at: Option<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Default)]
-pub struct CreateAssociation {
-    #[serde(rename = "to")]
-    pub to: AssociationTo,
-    pub types: Vec<AssociationType>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Default)]
-pub struct AssociationTo {
-    /// The ID of the record that you want to associate the note with.
-    pub id: String,
-}
-
-#[derive(Serialize, Deserialize, Debug, Default, Clone)]
-pub struct AssociationType {
-    /// A unique identifier to indicate the association type between the note and the other object.
-    /// You can retrieve the value through the associations API.
-    #[serde(rename = "associationTypeId")]
-    pub id: String,
-    #[serde(rename = "associationCategory")]
-    pub category: String,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct HubspotObjectToCreate<Properties> {
-    pub properties: Properties,
-    #[serde(default)]
-    pub associations: Vec<CreateAssociation>,
-}
-
-impl<Properties> HubspotObjectToCreate<Properties> {
-    pub fn new(properties: Properties) -> Self {
-        Self {
+/// Implementation of HubspotRecord where Properties and AssociationsToCreate are required.
+/// Recommended use for the base create endpoint.
+impl<Properties> HubspotRecord<Properties, OptionNotDesired, Vec<CreateAssociation>> {
+    /// Create a new HubspotRecord with the given properties. Initializes a vec for associations to create. Default values for all other fields.
+    /// Suggested use for the Core New endpoint.
+    pub fn with_properties_and_associations(
+        properties: Properties,
+    ) -> HubspotRecord<Properties, OptionNotDesired, Vec<CreateAssociation>> {
+        HubspotRecord {
             properties,
+            id: String::new(),
+            created_at: None,
+            updated_at: None,
+            archived: None,
+            archived_at: None,
             associations: Vec::new(),
+            properties_with_history: OptionNotDesired::default(),
         }
     }
 
@@ -149,15 +119,44 @@ impl<Properties> HubspotObjectToCreate<Properties> {
     }
 }
 
+/// The struct to create a new association between two records.
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct CreateAssociation {
+    #[serde(rename = "to")]
+    pub to: AssociationTo,
+    pub types: Vec<AssociationType>,
+}
+
+/// The struct for the record to associate a record with.
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct AssociationTo {
+    /// The ID of the record that you want to associate the note with.
+    pub id: String,
+}
+
+/// The association type a new association should be.
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+pub struct AssociationType {
+    /// A unique identifier to indicate the association type between the note and the other object.
+    /// You can retrieve the value through the associations API.
+    #[serde(rename = "associationTypeId")]
+    pub id: String,
+    // Whether the association type was created by HubSpot or a user (HUBSPOT_DEFINED and USER_DEFINED)
+    #[serde(rename = "associationCategory")]
+    pub category: String,
+}
+
 /// Empty struct to represent hubspot option that is not required for a specific request.
-#[derive(Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct OptionNotDesired {}
 
+/// A list of association results
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct AssociationsResults {
     pub results: Vec<Association>,
 }
 
+/// An representation of an association as returned by Hubspot
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Association {
     pub id: String,
@@ -165,14 +164,19 @@ pub struct Association {
     pub association_type: String,
 }
 
+/// A paged result type.
 #[derive(Deserialize, Debug, Default)]
 pub struct ListResult<T> {
+    /// A Vec of the results.
     pub results: Vec<T>,
+    /// Paging information.
     pub paging: Paging,
 }
 
+/// Paging information
 #[derive(Deserialize, Debug, Default)]
 pub struct Paging {
+    /// The next page
     pub next: PagingNext,
 }
 
@@ -182,13 +186,17 @@ pub struct PagingNext {
     pub link: String,
 }
 
+/// An enum of Built In Hubspot Associations.
+/// To be built upon in the future.
 pub enum KnownBuiltInAssociations {
     NoteToContact,
     NoteToCompany,
     NoteToDeal,
 }
 
+/// Implementation of CreateAssociation
 impl CreateAssociation {
+    /// Create a new association using the KnownBuiltInAssociations
     pub fn new_built_in(id: String, association_type: &KnownBuiltInAssociations) -> Self {
         Self {
             to: AssociationTo { id },
@@ -204,7 +212,9 @@ impl CreateAssociation {
     }
 }
 
+/// Implementation of KnownBuiltInAssociations
 impl KnownBuiltInAssociations {
+    /// Build a new AssociationType from the given KnownBuiltInAssociations
     pub fn build(&self) -> AssociationType {
         AssociationType {
             id: match self {
@@ -217,7 +227,9 @@ impl KnownBuiltInAssociations {
     }
 }
 
+/// Implementation of AssociationType
 impl AssociationType {
+    /// Constructs a new AssociationType
     pub fn new(id: &str, category: &str) -> Self {
         Self {
             id: id.to_string(),

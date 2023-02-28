@@ -1,3 +1,4 @@
+/// Check if query has begun.
 pub fn query_begun_check(checkpoint: bool) -> (String, bool) {
     if checkpoint {
         ("&".to_string(), checkpoint)
@@ -6,6 +7,7 @@ pub fn query_begun_check(checkpoint: bool) -> (String, bool) {
     }
 }
 
+/// Build the query for hubspot paging.
 pub fn build_paging_query(limit: Option<i32>, after: Option<&str>) -> (String, bool) {
     let mut query_begun = false;
 
@@ -29,6 +31,7 @@ pub fn build_paging_query(limit: Option<i32>, after: Option<&str>) -> (String, b
     (format!("{}{}", limit_query, after_query), query_begun)
 }
 
+/// Build a query string from properties, properties_with_history, associations, and archived
 pub fn build_query_string(
     query_already_begun: bool,
     properties: &[&str],

@@ -24,17 +24,22 @@ pub struct Association {
 /// An association type that represents the relationship between two records.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AssociationTypes {
+    // Whether the association type was created by HubSpot or a user (HUBSPOT_DEFINED and USER_DEFINED)
     pub category: String,
+    /// The numeric ID for that association type.
     #[serde(alias = "typeId")]
     pub type_id: String,
+    /// Association labels describe relationships between all standard CRM objects
     pub label: String,
 }
 
 /// A struct for creating new associations.
 #[derive(Serialize, Debug)]
 pub struct AssociationCreationDetails {
+    /// Whether the association type was created by HubSpot or a user (HUBSPOT_DEFINED and USER_DEFINED)
     #[serde(alias = "associationCategory")]
     pub category: String,
+    /// The numeric ID for that association type.
     #[serde(alias = "associationTypeId")]
     pub type_id: AssociationTypes,
 }
@@ -42,12 +47,16 @@ pub struct AssociationCreationDetails {
 /// A  Hubspot result type for a created association.
 #[derive(Deserialize, Debug)]
 pub struct CreatedAssociationResult {
+    /// The type of the object you're associating (e.g. contact).
     #[serde(alias = "fromObjectTypeId")]
     pub from_object_type_id: String,
+    /// The ID of the record to associate.
     #[serde(alias = "fromObjectId")]
     pub from_object_id: String,
+    /// The type of object you're associating the record to (e.g. company).
     #[serde(alias = "toObjectId")]
     pub to_object_id: String,
+    /// Association labels describe relationships between all standard CRM objects
     pub labels: Vec<String>,
 }
 
@@ -80,9 +89,13 @@ where
     /// List all associations of a record by object type. Limit 1000 per call.
     pub async fn list(
         &self,
+        // The ID of the record retrieve the associations for.
         id: &str,
+        // The type of object to retrieve associations for.
         to_object_type: &str,
+        // The maximum number of results to display per page.
         limit: Option<i32>,
+        // The paging cursor token of the last successfully read resource will be returned as the paging.next.after JSON property of a paged response containing more results.
         after: Option<&str>,
     ) -> HubspotResult<ListResult<Association>> {
         let paging_query = build_paging_query(limit, after);

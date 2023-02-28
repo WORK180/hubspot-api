@@ -5,18 +5,15 @@ pub mod types;
 
 use std::sync::Arc;
 
-pub use types::AssociationsResults;
-pub use types::{
-    AssociationType, HubspotObject, HubspotObjectToCreate, HubspotUpdatedObject,
-    KnownBuiltInAssociations,
-};
+pub use types::{AssociationType, HubspotRecord, KnownBuiltInAssociations};
 
 use crate::client::HubspotClient;
+use crate::OptionNotDesired;
 
 use self::associations::AssociationsApiCollection;
 use self::batch::BatchApiCollection;
 use self::query::{build_paging_query, build_query_string};
-use self::types::{HubspotBaseObject, ListResult, ObjectApi, ToPath};
+use self::types::{CreateAssociation, ListResult, ObjectApi, ToPath};
 
 use reqwest::Method;
 use serde::{de::DeserializeOwned, Serialize};
@@ -24,6 +21,7 @@ use serde_aux::serde_introspection::serde_introspect;
 
 use crate::client::error::HubspotResult;
 
+/// A collection of Hubspot api methods.
 #[derive(Clone, Debug)]
 pub struct ApiCollection<T>
 where
@@ -52,6 +50,7 @@ impl<T> ApiCollection<T>
 where
     T: Clone + ToPath,
 {
+    /// Construct a new API collection of T.
     pub fn new(name: T, client: Arc<HubspotClient>) -> Self {
         Self {
             name: name.clone(),
@@ -76,7 +75,7 @@ where
         limit: Option<i32>,
         after: Option<&str>,
         archived: Option<bool>,
-    ) -> HubspotResult<ListResult<HubspotObject<Properties, PropertiesWithHistory, Associations>>>
+    ) -> HubspotResult<ListResult<HubspotRecord<Properties, PropertiesWithHistory, Associations>>>
     where
         Properties: DeserializeOwned,
         PropertiesWithHistory: DeserializeOwned + Default,
@@ -85,7 +84,7 @@ where
         let paging_query = build_paging_query(limit, after);
 
         self.client()
-            .send::<ListResult<HubspotObject<Properties, PropertiesWithHistory, Associations>>>(
+            .send::<ListResult<HubspotRecord<Properties, PropertiesWithHistory, Associations>>>(
                 self.client().begin(
                     Method::GET,
                     &format!(
@@ -117,18 +116,20 @@ where
     ///     If the requested object doesn't have a value for a associations, it will not appear in the response.
     pub async fn create<Properties, PropertiesWithHistory, Associations>(
         &self,
-        object_to_create: HubspotObjectToCreate<Properties>,
-    ) -> HubspotResult<HubspotObject<Properties, PropertiesWithHistory, Associations>>
+        object_to_create: HubspotRecord<Properties, OptionNotDesired, Vec<CreateAssociation>>,
+    ) -> HubspotResult<HubspotRecord<Properties, PropertiesWithHistory, Associations>>
     where
         Properties: Serialize + DeserializeOwned + Send + Sync,
         PropertiesWithHistory: DeserializeOwned + Default,
         Associations: DeserializeOwned + Default + Send + Sync,
     {
         self.client()
-            .send::<HubspotObject<Properties, PropertiesWithHistory, Associations>>(
+            .send::<HubspotRecord<Properties, PropertiesWithHistory, Associations>>(
                 self.client()
                     .begin(Method::POST, &format!("crm/v4/objects/{}", self.path()))
-                    .json::<HubspotObjectToCreate<Properties>>(&object_to_create),
+                    .json::<HubspotRecord<Properties, OptionNotDesired, Vec<CreateAssociation>>>(
+                        &object_to_create,
+                    ),
             )
             .await
     }
@@ -147,14 +148,14 @@ where
         &self,
         id: &str,
         archived: bool,
-    ) -> HubspotResult<HubspotObject<Properties, PropertiesWithHistory, Associations>>
+    ) -> HubspotResult<HubspotRecord<Properties, PropertiesWithHistory, Associations>>
     where
         Properties: DeserializeOwned,
         PropertiesWithHistory: DeserializeOwned + Default,
         Associations: DeserializeOwned + Default,
     {
         self.client()
-            .send::<HubspotObject<Properties, PropertiesWithHistory, Associations>>(
+            .send::<HubspotRecord<Properties, PropertiesWithHistory, Associations>>(
                 self.client().begin(
                     Method::GET,
                     &format!(
@@ -185,21 +186,21 @@ where
         &self,
         id: String,
         properties: Properties,
-    ) -> HubspotResult<HubspotUpdatedObject<Properties, PropertiesWithHistory>>
+    ) -> HubspotResult<HubspotRecord<Properties, PropertiesWithHistory, OptionNotDesired>>
     where
         Properties: Serialize + DeserializeOwned + Send + Sync + std::fmt::Debug,
         PropertiesWithHistory: DeserializeOwned + Default,
     {
         self.client()
-            .send::<HubspotUpdatedObject<Properties, PropertiesWithHistory>>(
+            .send::<HubspotRecord<Properties, PropertiesWithHistory, OptionNotDesired>>(
                 self.client()
                     .begin(
                         Method::PATCH,
                         &format!("crm/v3/objects/{}/{}", self.path(), id,),
                     )
-                    .json::<HubspotBaseObject<Properties>>(&HubspotBaseObject::new_outbound(
-                        properties,
-                    )),
+                    .json::<HubspotRecord<Properties, OptionNotDesired, OptionNotDesired>>(
+                        &HubspotRecord::with_properties(properties),
+                    ),
             )
             .await
     }
