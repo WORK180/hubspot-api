@@ -16,7 +16,7 @@ use crate::client::HubspotClient;
 use self::associations::AssociationsApiCollection;
 use self::batch::BatchApiCollection;
 use self::query::{build_paging_query, build_query_string};
-use self::types::{ListResult, ObjectApi, ToPath};
+use self::types::{HubspotBaseObject, ListResult, ObjectApi, ToPath};
 
 use reqwest::Method;
 use serde::{de::DeserializeOwned, Serialize};
@@ -181,13 +181,12 @@ where
     ///
     /// PropertiesWithHistory:  A struct of the properties with history to be returned in the response.
     ///     If the requested object doesn't have a value for a property, it will not appear in the response.
-    pub async fn update<PropertiesToUpdate, Properties, PropertiesWithHistory>(
+    pub async fn update<Properties, PropertiesWithHistory>(
         &self,
         id: String,
-        properties: PropertiesToUpdate,
+        properties: Properties,
     ) -> HubspotResult<HubspotUpdatedObject<Properties, PropertiesWithHistory>>
     where
-        PropertiesToUpdate: Serialize,
         Properties: Serialize + DeserializeOwned + Send + Sync + std::fmt::Debug,
         PropertiesWithHistory: DeserializeOwned + Default,
     {
@@ -198,7 +197,9 @@ where
                         Method::PATCH,
                         &format!("crm/v3/objects/{}/{}", self.path(), id,),
                     )
-                    .json::<PropertiesToUpdate>(&properties),
+                    .json::<HubspotBaseObject<Properties>>(&HubspotBaseObject::new_outbound(
+                        properties,
+                    )),
             )
             .await
     }

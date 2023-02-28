@@ -41,8 +41,9 @@ pub struct HubspotObject<Properties, PropertiesWithHistory, Associations> {
     pub archived_at: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct HubspotCreatedObject<Properties> {
+/// Hubspot Object with no associations or properties_with_history
+#[derive(Serialize, Deserialize, Debug)]
+pub struct HubspotBaseObject<Properties> {
     pub id: String,
     pub properties: Properties,
     #[serde(alias = "createdAt")]
@@ -52,6 +53,19 @@ pub struct HubspotCreatedObject<Properties> {
     pub archived: Option<bool>,
     #[serde(alias = "archivedAt")]
     pub archived_at: Option<String>,
+}
+
+impl<Properties> HubspotBaseObject<Properties> {
+    pub fn new_outbound(properties: Properties) -> HubspotBaseObject<Properties> {
+        HubspotBaseObject {
+            properties,
+            id: String::new(),
+            created_at: None,
+            updated_at: None,
+            archived: None,
+            archived_at: None,
+        }
+    }
 }
 
 #[derive(Deserialize, Debug)]

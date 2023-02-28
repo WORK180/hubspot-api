@@ -5,7 +5,7 @@ use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use crate::client::{error::HubspotResult, HubspotClient};
 
-use super::types::{HubspotCreatedObject, HubspotObject, ObjectApi, ToPath};
+use super::types::{HubspotBaseObject, HubspotObject, ObjectApi, ToPath};
 
 #[derive(Serialize, Debug)]
 pub struct BatchInputs<I> {
@@ -98,12 +98,12 @@ where
     pub async fn create<Properties>(
         &self,
         objects_to_create: Vec<Properties>,
-    ) -> HubspotResult<HubspotCreatedObject<Properties>>
+    ) -> HubspotResult<HubspotBaseObject<Properties>>
     where
         Properties: Serialize + DeserializeOwned + Send + Sync + Clone,
     {
         self.client()
-            .send::<HubspotCreatedObject<Properties>>(
+            .send::<HubspotBaseObject<Properties>>(
                 self.client()
                     .begin(Method::POST, &format!("crm/v4/objects/{}", self.path()))
                     .json::<BatchInputs<BatchPropertiesInputs<Properties>>>(&BatchInputs::<
