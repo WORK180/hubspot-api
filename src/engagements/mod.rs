@@ -33,7 +33,7 @@ impl ToPath for EngagementType {
 /// and also associate the call with their associated company.
 /// Possible activities include notes, tasks, meetings, emails, calls, postal mail,
 /// SMS, LinkedIn messages, and WhatsApp messaged.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct EngagementsManager {
     /// Notes add information to the record timeline.
     pub notes: ApiCollection<EngagementType>,
