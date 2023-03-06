@@ -40,7 +40,7 @@ impl ToPath for ObjectType {
 /// Depending on your HubSpot subscription, there are additional objects, such as products and custom objects.
 ///
 ///Records are individual instances of an object (e.g., John Smith is a contact). For each record, you can store information in properties, track interactions, and create reports. You can also make associations between records to understand the relationships between them
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct ObjectsManager {
     /// Contacts store information about an individual person.
     pub contacts: ApiCollection<ObjectType>,
