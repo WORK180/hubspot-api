@@ -17,7 +17,7 @@ pub use engagements::EngagementType;
 pub use objects::ObjectType;
 
 // A Rust implementation of the Hubspot CRM API
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Hubspot {
     pub portal_id: String,
     /// Objects represent types of relationships or processes.
