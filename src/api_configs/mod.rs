@@ -6,7 +6,7 @@ pub mod types;
 use std::sync::Arc;
 
 pub use types::{
-    AssociationType, CreateAssociation, HubspotRecord, KnownBuiltInAssociations, OptionNotDesired,
+    AssociationLinks, AssociationType, CreateAssociation, HubspotRecord, OptionNotDesired,
 };
 
 use crate::client::HubspotClient;

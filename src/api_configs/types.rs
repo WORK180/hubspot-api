@@ -95,7 +95,7 @@ impl<Properties> HubspotRecord<Properties, OptionNotDesired, Vec<CreateAssociati
     /// Attach multiple associations of the same known built in associations
     pub fn attach_built_in_associations(
         mut self,
-        association_type: KnownBuiltInAssociations,
+        association_type: AssociationLinks,
         ids: Vec<String>,
     ) -> Self {
         for id in ids {
@@ -189,7 +189,7 @@ pub struct PagingNext {
 
 /// An enum of Built In Hubspot Associations.
 /// To be built upon in the future.
-pub enum KnownBuiltInAssociations {
+pub enum AssociationLinks {
     NoteToContact,
     NoteToCompany,
     NoteToDeal,
@@ -197,8 +197,8 @@ pub enum KnownBuiltInAssociations {
 
 /// Implementation of CreateAssociation
 impl CreateAssociation {
-    /// Create a new association using the KnownBuiltInAssociations
-    pub fn new_built_in(id: String, association_type: &KnownBuiltInAssociations) -> Self {
+    /// Create a new association using the AssociationLinks
+    pub fn new_built_in(id: String, association_type: &AssociationLinks) -> Self {
         Self {
             to: AssociationTo { id },
             types: vec![association_type.build()],
@@ -213,15 +213,15 @@ impl CreateAssociation {
     }
 }
 
-/// Implementation of KnownBuiltInAssociations
-impl KnownBuiltInAssociations {
-    /// Build a new AssociationType from the given KnownBuiltInAssociations
+/// Implementation of AssociationLinks
+impl AssociationLinks {
+    /// Build a new AssociationType from the given AssociationLinks
     pub fn build(&self) -> AssociationType {
         AssociationType {
             id: match self {
-                KnownBuiltInAssociations::NoteToContact => "202".to_string(),
-                KnownBuiltInAssociations::NoteToCompany => "190".to_string(),
-                KnownBuiltInAssociations::NoteToDeal => "214".to_string(),
+                AssociationLinks::NoteToContact => "202".to_string(),
+                AssociationLinks::NoteToCompany => "190".to_string(),
+                AssociationLinks::NoteToDeal => "214".to_string(),
             },
             category: "HUBSPOT_DEFINED".to_string(),
         }
