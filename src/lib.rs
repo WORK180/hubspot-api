@@ -5,16 +5,19 @@ use client::HubspotClient;
 use engagements::EngagementsManager;
 use objects::ObjectsManager;
 
+mod api_configs;
 mod builder;
 mod client;
 mod engagements;
 mod objects;
 
-pub use engagements::{Note, Properties};
-pub use objects::{Company, Contact, Deal, DealAssociations, DealAssociationsResults, ObjectType};
+pub use api_configs::types;
+pub use engagements::notes;
+pub use engagements::EngagementType;
+pub use objects::ObjectType;
 
 // A Rust implementation of the Hubspot CRM API
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Hubspot {
     pub portal_id: String,
     /// Objects represent types of relationships or processes.

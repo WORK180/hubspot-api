@@ -27,6 +27,7 @@ impl HubspotClient {
         }
     }
 
+    /// Send a hubspot request
     pub async fn send<R>(&self, req: RequestBuilder) -> HubspotResult<R>
     where
         R: DeserializeOwned,
