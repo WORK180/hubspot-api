@@ -22,6 +22,7 @@ where
         self.name().to_path()
     }
 
+    /// Returns the Hubspot client for use within the object's api routes.
     fn client(&self) -> &Arc<HubspotClient>;
 }
 

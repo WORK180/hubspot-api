@@ -2,29 +2,21 @@ pub mod notes;
 
 use std::sync::Arc;
 
+use strum_macros::Display;
+
 use crate::{
     api_configs::{types::ToPath, ApiCollection},
     client::HubspotClient,
 };
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Display)]
 pub enum EngagementType {
     Notes,
 }
 
-impl ToString for EngagementType {
-    fn to_string(&self) -> String {
-        match self {
-            EngagementType::Notes => "Notes".to_string(),
-        }
-    }
-}
-
 impl ToPath for EngagementType {
     fn to_path(&self) -> String {
-        match self {
-            EngagementType::Notes => "Notes".to_string().to_lowercase(),
-        }
+        self.to_string().to_lowercase()
     }
 }
 

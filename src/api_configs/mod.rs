@@ -47,6 +47,7 @@ where
     }
 }
 
+/// Implementation of Hubspot's Basic Api
 impl<T> ApiCollection<T>
 where
     T: Clone + ToPath,
@@ -61,7 +62,7 @@ where
         }
     }
 
-    /// Read a page of deals. Control what is returned via the properties query param.
+    /// Read a page of an object type (eg. deals). Control what is returned via the properties query param.
     ///
     /// Properties:  A struct of the properties to be returned in the response.
     ///     If the requested object doesn't have a value for a property, it will not appear in the response.

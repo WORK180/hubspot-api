@@ -38,6 +38,7 @@ pub struct ObjectsManager {
     pub companies: ApiCollection<ObjectType>,
     /// Deals represent revenue opportunities with a contact or company. They’re tracked through pipeline stages, resulting in the deal being won or lost.
     pub deals: ApiCollection<ObjectType>,
+    /// Line items are individual instances of products. When a product is attached to a deal, it becomes a line item.
     pub line_items: ApiCollection<ObjectType>,
 }
 
