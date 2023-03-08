@@ -1,10 +1,12 @@
 use std::sync::Arc;
 
+use strum_macros::Display;
+
 use crate::api_configs::types::ToPath;
 use crate::api_configs::ApiCollection;
 use crate::client::HubspotClient;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Display)]
 pub enum ObjectType {
     Contacts,
     Companies,
@@ -12,24 +14,12 @@ pub enum ObjectType {
     LineItems,
 }
 
-impl ToString for ObjectType {
-    fn to_string(&self) -> String {
-        match self {
-            ObjectType::Contacts => "Contacts".to_string(),
-            ObjectType::Companies => "Companies".to_string(),
-            ObjectType::Deals => "Deals".to_string(),
-            ObjectType::LineItems => "Line Items".to_string(),
-        }
-    }
-}
-
+// TODO see if we can use strum
 impl ToPath for ObjectType {
     fn to_path(&self) -> String {
         match self {
-            ObjectType::Contacts => "contacts".to_string(),
-            ObjectType::Companies => "companies".to_string(),
-            ObjectType::Deals => "deals".to_string(),
             ObjectType::LineItems => "line_items".to_string(),
+            object_type => object_type.to_string().to_lowercase(),
         }
     }
 }
@@ -39,7 +29,7 @@ impl ToPath for ObjectType {
 /// All HubSpot accounts include four standard objects: contacts, companies, deals, and tickets.
 /// Depending on your HubSpot subscription, there are additional objects, such as products and custom objects.
 ///
-///Records are individual instances of an object (e.g., John Smith is a contact). For each record, you can store information in properties, track interactions, and create reports. You can also make associations between records to understand the relationships between them
+/// Records are individual instances of an object (e.g., John Smith is a contact). For each record, you can store information in properties, track interactions, and create reports. You can also make associations between records to understand the relationships between them
 #[derive(Clone, Debug)]
 pub struct ObjectsManager {
     /// Contacts store information about an individual person.
