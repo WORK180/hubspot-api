@@ -9,9 +9,9 @@ use super::types::{HubspotRecord, ObjectApi, OptionNotDesired, ToPath};
 
 /// A wrapper type for batch inputs.
 #[derive(Serialize, Debug)]
-pub struct BatchInputs<I> {
+struct BatchInputs<I> {
     /// The inputs for a Batch request.
-    pub inputs: Vec<I>,
+    inputs: Vec<I>,
 }
 
 impl<I> BatchInputs<I> {
@@ -24,11 +24,11 @@ impl<I> BatchInputs<I> {
 /// A struct of record Ids for the update batch api.
 /// eg. Batch update.
 #[derive(Serialize, Debug)]
-pub struct BatchUpdateInput<Properties> {
+struct BatchUpdateInput<Properties> {
     /// Hubspot record Ids for a batch request.
-    pub id: String,
+    id: String,
     /// The property inputs for a batch request
-    pub properties: Properties,
+    properties: Properties,
 }
 
 impl<Properties: Clone> BatchUpdateInput<Properties> {
@@ -54,57 +54,57 @@ impl<Properties: Clone> BatchUpdateInput<Properties> {
 /// A struct of record Ids for the batch api.
 /// eg. Batch read.
 #[derive(Serialize, Debug)]
-pub struct BatchIdInput {
+struct BatchIdInput {
     /// Hubspot record Ids for a batch request.
-    pub id: String,
+    id: String,
 }
 
 /// A wrapper type for batch properties inputs
 #[derive(Serialize, Debug)]
-pub struct BatchPropertiesInput<Properties> {
+struct BatchPropertiesInput<Properties> {
     /// The property inputs for a batch request
-    pub properties: Properties,
+    properties: Properties,
 }
 
 /// The required inputs for a Batch Read request.
 #[derive(Serialize, Debug)]
-pub struct BatchReadInputs<Properties, PropertiesWithHistory, Associations> {
+struct BatchReadInputs<Properties, PropertiesWithHistory, Associations> {
     /// The record ids to return for a batch request.
-    pub inputs: Vec<BatchIdInput>,
+    inputs: Vec<BatchIdInput>,
     /// The record properties for a batch request
-    pub properties: Properties,
+    properties: Properties,
     /// The record properties with history for a batch request
     #[serde(alias = "propertiesWithHistory")]
     #[serde(default)]
-    pub properties_with_history: PropertiesWithHistory,
+    properties_with_history: PropertiesWithHistory,
     /// The record associations for a batch request
-    pub associations: Associations,
+    associations: Associations,
     /// Whether to return only results that have been archived.
-    pub archived: bool,
+    archived: bool,
 }
 
 /// A Hubspot result type for a batch request.
 #[derive(Deserialize, Debug, Default)]
-pub struct BatchResult<Properties, PropertiesWithHistory, Associations>
+struct BatchResult<Properties, PropertiesWithHistory, Associations>
 where
     PropertiesWithHistory: Default,
     Associations: Default,
 {
     /// The status result of the batch request.
-    pub status: String,
+    status: String,
     /// The result objects of the batch request.
-    pub results: Vec<HubspotRecord<Properties, PropertiesWithHistory, Associations>>,
+    results: Vec<HubspotRecord<Properties, PropertiesWithHistory, Associations>>,
     #[serde(alias = "requestedAt")]
     /// The time the batch request was requested.
-    pub requested_at: String,
+    requested_at: String,
     /// The time the batch request started.
     #[serde(alias = "startedAt")]
-    pub started_at: String,
+    started_at: String,
     /// The time the batch request was completed at.
     #[serde(alias = "completedAt")]
-    pub completed_at: String,
+    completed_at: String,
     /// Links for the batch request.
-    pub links: HashMap<String, String>,
+    links: HashMap<String, String>,
 }
 
 // Batch Api Collection
