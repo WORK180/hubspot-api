@@ -41,10 +41,13 @@ Below is an example of how to read a deal by ID.
 
 _example.rs_
 ```rust
-use std::io::Result;
 use hubspot::{
-    Deal, DealAssociationsResults as AssociationsResults, Hubspot
+    types::{AssociationResults, HubspotRecord, OptionNotDesired},
+    Hubspot,
 };
+use serde::Deserialize;
+
+type Deal = HubspotRecord<DealProperties, OptionNotDesired, DealAssociations>;
 
 // This is where you specify the deal properties that will be returned by hubspot
 #[derive(Deserialize, Debug)]
@@ -55,19 +58,21 @@ pub struct DealProperties {
 }
 
 // This is where you specify which objects associations you want returned by hubspot
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Default)]
 pub struct DealAssociations {
-    pub companies: Option<AssociationsResults>,
-    pub contacts: Option<AssociationsResults>,
+    pub companies: Option<AssociationResults>,
+    pub contacts: Option<AssociationResults>,
 }
 
-async fn get_deal_examples(hubspot: Hubspot, deal_id: &str) {
-    let deal = hubspot
+async fn get_deal_examples(hubspot: Hubspot, deal_id: &str) -> Deal {
+    hubspot
         .objects
         .deals
-        .read::<DealAssociations, DealProperties>(&deal_id)
-        .await?;
+        .read::<DealProperties, OptionNotDesired, DealAssociations>(&deal_id, false)
+        .await
+        .unwrap()
 }
+
 ```
 
 ## Suggestions and Issues
