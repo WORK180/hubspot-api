@@ -85,26 +85,26 @@ struct BatchReadInputs<Properties, PropertiesWithHistory, Associations> {
 
 /// A Hubspot result type for a batch request.
 #[derive(Deserialize, Debug, Default)]
-struct BatchResult<Properties, PropertiesWithHistory, Associations>
+pub struct BatchResult<Properties, PropertiesWithHistory, Associations>
 where
     PropertiesWithHistory: Default,
     Associations: Default,
 {
     /// The status result of the batch request.
-    status: String,
+    pub status: String,
     /// The result objects of the batch request.
-    results: Vec<HubspotRecord<Properties, PropertiesWithHistory, Associations>>,
+    pub results: Vec<HubspotRecord<Properties, PropertiesWithHistory, Associations>>,
     #[serde(alias = "requestedAt")]
     /// The time the batch request was requested.
-    requested_at: String,
+    pub requested_at: String,
     /// The time the batch request started.
     #[serde(alias = "startedAt")]
-    started_at: String,
+    pub started_at: String,
     /// The time the batch request was completed at.
     #[serde(alias = "completedAt")]
-    completed_at: String,
+    pub completed_at: String,
     /// Links for the batch request.
-    links: HashMap<String, String>,
+    pub links: HashMap<String, String>,
 }
 
 // Batch Api Collection
