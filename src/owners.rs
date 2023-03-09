@@ -62,7 +62,7 @@ pub struct OwnerApi {
 
 /// Implementation of Hubspot's Owner Api
 impl OwnerApi {
-    /// Construct a new API collection of T.
+    /// Construct a new Owner API collection.
     pub fn new(client: Arc<HubspotClient>) -> Self {
         Self {
             client: Arc::clone(&client),
