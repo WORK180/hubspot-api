@@ -70,11 +70,7 @@ impl OwnerApi {
     }
 
     /// Returns the owner for the given ID.
-    pub async fn read<Properties, PropertiesWithHistory, Associations>(
-        &self,
-        id: &str,
-        archived: bool,
-    ) -> HubspotResult<Owner> {
+    pub async fn read(&self, id: &str, archived: bool) -> HubspotResult<Owner> {
         self.client
             .send::<Owner>(self.client.begin(
                 Method::GET,
