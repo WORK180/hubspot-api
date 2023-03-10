@@ -18,7 +18,7 @@ pub struct Association {
     pub to_object_id: i64,
     /// The association type to reflect the relationship between the two records.
     #[serde(alias = "associationTypes")]
-    pub association_types: AssociationTypes,
+    pub association_types: Vec<AssociationTypes>,
 }
 
 /// An association type that represents the relationship between two records.
