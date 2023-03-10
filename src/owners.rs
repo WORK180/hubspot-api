@@ -16,7 +16,7 @@ use crate::client::error::HubspotResult;
 ///  to get their identifying details, including IDs and email addresses. This data can
 /// then be assigned to CRM records in HubSpot or via property change API calls.
 #[derive(Deserialize, Debug)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub struct Owner {
     /// Owner Identifier
     pub id: String,
