@@ -28,7 +28,7 @@ pub struct AssociationTypes {
     pub category: String,
     /// The numeric ID for that association type.
     #[serde(alias = "typeId")]
-    pub type_id: String,
+    pub type_id: i64,
     /// Association labels describe relationships between all standard CRM objects
     pub label: String,
 }
