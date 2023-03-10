@@ -38,7 +38,6 @@ impl HubspotClient {
             let body = res.bytes().await?;
             let body = body.to_vec();
             let body = std::str::from_utf8(&body).unwrap();
-            println!("body: {:?}", body);
 
             if body.is_empty() {
                 Ok(serde_json::from_str::<R>("null")?)
