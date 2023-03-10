@@ -15,7 +15,7 @@ use super::{
 pub struct Association {
     /// The id of the associated record.
     #[serde(alias = "toObjectId")]
-    pub to_object_id: String,
+    pub to_object_id: i64,
     /// The association type to reflect the relationship between the two records.
     #[serde(alias = "associationTypes")]
     pub association_types: AssociationTypes,
