@@ -51,4 +51,13 @@ impl ObjectsManager {
             line_items: ApiCollection::new(ObjectType::LineItems, Arc::clone(&client)),
         }
     }
+
+    pub fn get_api_collection(&self, object_type: ObjectType) -> &ApiCollection<ObjectType> {
+        match object_type {
+            ObjectType::Contacts => &self.contacts,
+            ObjectType::Companies => &self.companies,
+            ObjectType::Deals => &self.deals,
+            ObjectType::LineItems => &self.line_items,
+        }
+    }
 }
