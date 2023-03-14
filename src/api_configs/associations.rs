@@ -15,10 +15,10 @@ use super::{
 pub struct Association {
     /// The id of the associated record.
     #[serde(alias = "toObjectId")]
-    pub to_object_id: String,
+    pub to_object_id: i64,
     /// The association type to reflect the relationship between the two records.
     #[serde(alias = "associationTypes")]
-    pub association_types: AssociationTypes,
+    pub association_types: Vec<AssociationTypes>,
 }
 
 /// An association type that represents the relationship between two records.
@@ -28,9 +28,9 @@ pub struct AssociationTypes {
     pub category: String,
     /// The numeric ID for that association type.
     #[serde(alias = "typeId")]
-    pub type_id: String,
+    pub type_id: i64,
     /// Association labels describe relationships between all standard CRM objects
-    pub label: String,
+    pub label: Option<String>,
 }
 
 /// A struct for creating new associations.

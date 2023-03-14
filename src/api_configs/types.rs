@@ -172,7 +172,7 @@ pub struct ListResult<T> {
     /// A Vec of the results.
     pub results: Vec<T>,
     /// Paging information.
-    pub paging: Paging,
+    pub paging: Option<Paging>,
 }
 
 /// Paging information
