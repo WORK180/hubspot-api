@@ -10,11 +10,13 @@ mod builder;
 mod client;
 mod engagements;
 mod objects;
+mod owners;
 
 pub use api_configs::types;
 pub use engagements::notes;
 pub use engagements::EngagementType;
 pub use objects::ObjectType;
+use owners::OwnerApi;
 
 // A Rust implementation of the Hubspot CRM API
 #[derive(Clone, Debug)]
@@ -24,6 +26,8 @@ pub struct Hubspot {
     pub objects: ObjectsManager,
     /// Engagements store data from interactions with records.
     pub engagements: EngagementsManager,
+    /// Owners are specific users assigned to contacts, companies, deals, tickets, or engagements.
+    pub owners: OwnerApi,
 }
 
 impl Hubspot {
@@ -36,6 +40,7 @@ impl Hubspot {
             portal_id,
             objects: ObjectsManager::new(Arc::clone(&client)),
             engagements: EngagementsManager::new(Arc::clone(&client)),
+            owners: OwnerApi::new(Arc::clone(&client)),
         }
     }
 
