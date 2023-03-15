@@ -7,7 +7,7 @@ To install the Hubspot API from crates.io, add the following line to your;
 _Cargo.toml_
 ```toml
 [dependencies]
-hubspot = "0.2.1"
+hubspot = "0.2.2"
 dotenv = "0.15" # Or preferred
 ```
 
