@@ -52,7 +52,8 @@ impl ObjectsManager {
         }
     }
 
-    pub fn get_api_collection(&self, object_type: ObjectType) -> &ApiCollection<ObjectType> {
+    /// Uses the object_type to return the relevant collection.
+    pub fn get_collection(&self, object_type: ObjectType) -> &ApiCollection<ObjectType> {
         match object_type {
             ObjectType::Contacts => &self.contacts,
             ObjectType::Companies => &self.companies,
