@@ -37,11 +37,11 @@ pub struct AssociationTypes {
 #[derive(Serialize, Debug)]
 pub struct AssociationCreationDetails {
     /// Whether the association type was created by HubSpot or a user (HUBSPOT_DEFINED and USER_DEFINED)
-    #[serde(alias = "associationCategory")]
+    #[serde(rename = "associationCategory")]
     pub category: String,
     /// The numeric ID for that association type.
-    #[serde(alias = "associationTypeId")]
-    pub type_id: AssociationTypes,
+    #[serde(rename = "associationTypeId")]
+    pub type_id: i64,
 }
 
 /// A  Hubspot result type for a created association.
@@ -52,10 +52,10 @@ pub struct CreatedAssociationResult {
     pub from_object_type_id: String,
     /// The ID of the record to associate.
     #[serde(alias = "fromObjectId")]
-    pub from_object_id: String,
+    pub from_object_id: i64,
     /// The type of object you're associating the record to (e.g. company).
     #[serde(alias = "toObjectId")]
-    pub to_object_id: String,
+    pub to_object_id: i64,
     /// Association labels describe relationships between all standard CRM objects
     pub labels: Vec<String>,
 }

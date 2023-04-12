@@ -12,6 +12,10 @@ mod engagements;
 mod objects;
 mod owners;
 
+pub mod associations {
+    pub use super::api_configs::{AssociationCreationDetails, AssociationTypes};
+}
+
 pub use api_configs::types;
 pub use engagements::notes;
 pub use engagements::EngagementType;
