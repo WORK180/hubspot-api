@@ -14,7 +14,7 @@ pub fn build_paging_query(limit: Option<i32>, after: Option<&str>) -> (String, b
     let limit_query = match limit {
         Some(limit) => {
             query_begun = true;
-            format!("?{}", limit)
+            format!("?limit={}", limit)
         }
         None => String::new(),
     };
@@ -23,7 +23,7 @@ pub fn build_paging_query(limit: Option<i32>, after: Option<&str>) -> (String, b
         Some(after) => {
             let query_check = query_begun_check(query_begun);
             query_begun = query_check.1;
-            format!("{}{}", query_check.0, after)
+            format!("{}after={}", query_check.0, after)
         }
         None => String::new(),
     };
@@ -44,8 +44,9 @@ pub fn build_query_string(
     let property_query = if properties.is_empty() {
         String::new()
     } else {
-        query_begun = true;
-        format!("?properties={}", properties.join(","))
+        let query_check = query_begun_check(query_begun);
+        query_begun = query_check.1;
+        format!("{}properties={}", query_check.0, properties.join(","))
     };
     let properties_with_history_query = if properties_with_history.is_empty() {
         String::new()
