@@ -1,23 +1,29 @@
 # Hubspot API Rust Library
+
 This unofficial Hubspot API Rust Library provides convenient access to the Hubspot CRM API from applications written in the Rust language.
 
 ## Installation
+
 To install the Hubspot API from crates.io, add the following line to your;
 
 _Cargo.toml_
+
 ```toml
 [dependencies]
-hubspot = "0.2.2"
+hubspot = "0.2.3"
 dotenv = "0.15" # Or preferred
 ```
 
 ## Configuring your hubspot settings
+
 This library utilises Hubspot Private App tokens to authenticate your requests. You can set up a Private App by following the instructions here: https://developers.hubspot.com/docs/api/private-apps
 
 ### Initializing your Hubspot client
+
 To set up your hubspot client you will need to add the following code.
 
 _.env_
+
 ```
 HUBSPOT_API_DOMAIN=api.hubapi.com
 HUBSPOT_API_KEY=<Your-private-app-token-here>
@@ -26,6 +32,7 @@ HUBSPOT_PORTAL_ID=<Your-hubspot-portal-id-here>
 ```
 
 _main.rs_
+
 ```rust
  let hubspot = Hubspot::builder()
         .domain(&env::var("HUBSPOT_API_DOMAIN").expect("HUBSPOT_API_DOMAIN is not set"))
@@ -37,9 +44,11 @@ _main.rs_
 ```
 
 ### Usage
+
 Below is an example of how to read a deal by ID.
 
 _example.rs_
+
 ```rust
 use hubspot::{
     types::{AssociationResults, HubspotRecord, OptionNotDesired},
@@ -76,4 +85,5 @@ async fn get_deal_examples(hubspot: Hubspot, deal_id: &str) -> Deal {
 ```
 
 ## Suggestions and Issues
+
 Please open an issue on github, and we will prioritize accordingly.
