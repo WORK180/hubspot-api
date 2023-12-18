@@ -1,10 +1,9 @@
-name: Hubspot-API-Pull-Request
+name: Merge
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - main
+    push:
+      branches:
+        - main
 
 jobs:
   check:
@@ -94,7 +93,7 @@ jobs:
           command: clippy
           args: -- -D warnings
 
-  dev-build:
+  build:
     name: Build validation
     needs: [check, fmt, clippy]
     runs-on: ubuntu-latest
@@ -129,3 +128,40 @@ jobs:
           use-cross: true
           command: build
           args: --release --target aarch64-unknown-linux-gnu --all-features
+ 
+  tag-and-release:
+    name: Tag and Release
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+      
+      - name: Read version
+        uses: SebRollen/toml-action@v1.0.2
+        id: read_toml
+        with:
+          file: '**/Cargo.toml'
+          field: 'package.version'
+      - run: echo 'Version = ${{ steps.read_toml.outputs.value }}
+      
+      - name: Check tag
+        uses: mukunku/tag-exists-action@v1.4.0
+        id: check_tag
+        with: 
+          tag: 'v${{ steps.read_toml.outputs.value }}'
+      - run: echo 'Tag exists = ${{ steps.check_tag.outputs.exists }}
+
+      - name: Release
+        if: ${{ steps.check_tag.outputs.exists == 'false'}}
+        uses: ncipollo/release-action@v1
+        with:
+          commit: ${{ github.sha }}
+          name: "release - v${{ steps.read_toml.outputs.value }}"
+          tag: "v${{ steps.read_toml.outputs.value }}"
+          allowUpdates: true
+          draft: true
+          generateReleaseNotes: true
+      
