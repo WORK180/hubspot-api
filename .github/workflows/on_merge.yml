@@ -3,7 +3,7 @@ name: Merge
 on:
     push:
       branches:
-        - main
+        - eng-1580-2
 
 jobs:
   check:
@@ -143,7 +143,7 @@ jobs:
         uses: SebRollen/toml-action@v1.0.2
         id: read_toml
         with:
-          file: '**/Cargo.toml'
+          file: 'Cargo.toml'
           field: 'package.version'
       - run: echo 'Version = ${{ steps.read_toml.outputs.value }}
       
