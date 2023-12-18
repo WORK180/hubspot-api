@@ -3,7 +3,7 @@ name: Merge
 on:
     push:
       branches:
-        - eng-1580-2
+        - main
 
 jobs:
   check:
