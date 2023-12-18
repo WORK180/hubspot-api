@@ -145,14 +145,14 @@ jobs:
         with:
           file: 'Cargo.toml'
           field: 'package.version'
-      - run: echo 'Version = ${{ steps.read_toml.outputs.value }}
+      - run: echo 'Version = ${{ steps.read_toml.outputs.value }}'
       
       - name: Check tag
         uses: mukunku/tag-exists-action@v1.4.0
         id: check_tag
         with: 
           tag: 'v${{ steps.read_toml.outputs.value }}'
-      - run: echo 'Tag exists = ${{ steps.check_tag.outputs.exists }}
+      - run: echo 'Tag exists = ${{ steps.check_tag.outputs.exists }}'
 
       - name: Release
         if: ${{ steps.check_tag.outputs.exists == 'false'}}
