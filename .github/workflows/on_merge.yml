@@ -115,7 +115,7 @@ jobs:
           fetch-tags: true
       
       - name: Read version
-        uses: SebRollen/toml-action@v1.2
+        uses: SebRollen/toml-action@v1.2.0
         id: read_toml
         with:
           file: 'Cargo.toml'
@@ -123,7 +123,7 @@ jobs:
       - run: echo 'Version = ${{ steps.read_toml.outputs.value }}'
       
       - name: Check tag
-        uses: mukunku/tag-exists-action@v1.6
+        uses: mukunku/tag-exists-action@v1.6.0
         id: check_tag
         with: 
           tag: 'v${{ steps.read_toml.outputs.value }}'
