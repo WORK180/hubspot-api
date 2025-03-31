@@ -7,9 +7,7 @@ use std::sync::Arc;
 
 pub use associations::{AssociationCreationDetails, AssociationTypes};
 
-pub use types::{
-    AssociationLinks, AssociationType, CreateAssociation, HubspotRecord, OptionNotDesired,
-};
+pub use types::{CreateAssociation, HubspotRecord, OptionNotDesired};
 
 use crate::client::HubspotClient;
 
