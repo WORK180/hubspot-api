@@ -20,6 +20,7 @@ jobs:
         with:
           profile: minimal
           toolchain: stable
+          target: aarch64-unknown-linux-gnu
           override: true
   
       - run: cargo publish --token ${CARGO_REGISTRY_TOKEN}

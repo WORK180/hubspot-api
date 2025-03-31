@@ -10,7 +10,7 @@ _Cargo.toml_
 
 ```toml
 [dependencies]
-hubspot = "0.2.3"
+hubspot = "0.2.5"
 dotenv = "0.15" # Or preferred
 ```
 
