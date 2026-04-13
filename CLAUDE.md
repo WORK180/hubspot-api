@@ -79,15 +79,15 @@ Returns field names from the `Deserialize` impl at compile time. `ApiCollection`
 ### `ToPath` + `ObjectApi<T>`
 ```rust
 pub trait ToPath { fn to_path(&self) -> String; }
-pub trait ObjectApi<T: ToPath> { fn name(&self) -> &str; fn path(&self) -> String; fn client(&self) -> &Arc<HubspotClient>; }
+pub trait ObjectApi<T: ToPath> { fn name(&self) -> &T; fn path(&self) -> String; fn client(&self) -> &Arc<HubspotClient>; }
 ```
 `ApiCollection<T>` is generic over any `T: ToPath`. The same CRUD/batch/associations implementation serves every object and engagement type with no duplication.
 
 ### `AssociationLinks` Enum
-Encodes HubSpot's built-in association type IDs as variants to eliminate magic numbers:
-- `NoteToContact = 202`
-- `NoteToCompany = 190`
-- `NoteToDeal = 214`
+Encodes HubSpot's built-in association type IDs as a plain enum. Call `.build()` to obtain the corresponding `AssociationType`:
+- `NoteToContact` → ID `"202"`
+- `NoteToCompany` → ID `"190"`
+- `NoteToDeal` → ID `"214"`
 
 ---
 

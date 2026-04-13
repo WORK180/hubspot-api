@@ -26,14 +26,14 @@ Constructed once in `Hubspot::new()` and shared via `Arc<HubspotClient>` across 
 pub(crate) fn begin(&self, method: reqwest::Method, path: &str) -> reqwest::RequestBuilder
 ```
 
-Constructs a `RequestBuilder` with the base URL (`https://{domain}/{path}`) and the `Authorization: Bearer {token}` header pre-applied. Callers pass the full path including version (e.g. `"crm/v3/objects/contacts"` or `"crm/v4/objects/deals"`). All public API methods start from `begin()`.
+Constructs a `RequestBuilder` with the base URL (`https://{domain}/{path}`). Callers pass the full path including version (e.g. `"crm/v3/objects/contacts"` or `"crm/v4/objects/deals"`). All public API methods start from `begin()`. Bearer authentication is **not** applied here — it is added by `send()`.
 
 #### `send`
 ```rust
 pub(crate) async fn send<R: DeserializeOwned>(&self, request: reqwest::RequestBuilder) -> HubspotResult<R>
 ```
 
-Sends the request, checks for HTTP errors, and deserializes the response body into `R`. Maps failures to `HubspotError`.
+Sends the request (attaching the `Authorization: Bearer {token}` header), checks for HTTP errors, and deserializes the response body into `R`. Maps failures to `HubspotError`.
 
 ---
 
@@ -76,20 +76,20 @@ match hubspot.objects.contacts.read::<MyProps, _, _>("bad-id", false).await {
 
 ---
 
-## `HubspotErrorResponse` (internal)
+## `HubspotErrorResponse` (internal helper)
 
-Used to deserialize HubSpot's structured error JSON before converting to `HubspotError::Hubspot(message)`.
+Used to deserialize HubSpot's structured error JSON before converting to `HubspotError::Hubspot`.
 
 ```rust
-struct HubspotErrorResponse {
+pub struct HubspotErrorResponse {
     pub message: String,
     pub context: HubspotErrorContext,
     pub category: String,
 }
 
-struct HubspotErrorContext {
+pub struct HubspotErrorContext {
     pub properties: Vec<String>,
 }
 ```
 
-These types are not part of the public API. When HubSpot returns a 4xx/5xx with a JSON body matching this shape, `send()` extracts `message` and returns `HubspotError::Hubspot(message)`.
+These types are not part of the public-facing API surface. When HubSpot returns a 4xx/5xx with a JSON body matching this shape, `send()` converts it via `From<HubspotErrorResponse>` which formats the error as `"{category}: {message}, {context:?}"`.

@@ -45,11 +45,12 @@ hubspot
     .notes
     .associations
     .create(
-        "789",
-        ObjectType::Contacts,
+        "789",                   // note ID (from)
+        ObjectType::Contacts,    // to object type
+        "456",                   // contact ID (to)
         vec![AssociationCreationDetails {
-            to_object_id: "456".to_string(),
-            association_type: AssociationLinks::NoteToContact,
+            category: "HUBSPOT_DEFINED".to_string(),
+            type_id: 202,        // NoteToContact built-in type ID
         }],
     )
     .await?;

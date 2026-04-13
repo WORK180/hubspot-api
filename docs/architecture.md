@@ -144,17 +144,21 @@ The same mechanism handles `propertiesWithHistory` if `PWH != OptionNotDesired`.
 
 ### `AssociationLinks` — Hardcoded Built-in Type IDs
 
-HubSpot assigns numeric IDs to standard ("built-in") association types. These are encoded in the `AssociationLinks` enum to eliminate magic numbers in calling code:
+HubSpot assigns numeric IDs to standard ("built-in") association types. These are encoded in the `AssociationLinks` plain enum to eliminate magic numbers in calling code:
 
 ```rust
 pub enum AssociationLinks {
-    NoteToContact = 202,
-    NoteToCompany = 190,
-    NoteToDeal    = 214,
+    NoteToContact,
+    NoteToCompany,
+    NoteToDeal,
+}
+
+impl AssociationLinks {
+    pub fn build(&self) -> AssociationType { ... }
 }
 ```
 
-Add new variants here as new built-in types are needed. Do not scatter raw numeric IDs elsewhere in the codebase.
+The numeric IDs (`202`, `190`, `214`) are produced by `.build()`, which returns an `AssociationType` with the `id` string and `"HUBSPOT_DEFINED"` category. Add new variants here as new built-in types are needed and wire them in `build()`. Do not scatter raw numeric IDs elsewhere in the codebase.
 
 ---
 
@@ -163,8 +167,8 @@ Add new variants here as new built-in types are needed. Do not scatter raw numer
 `Hubspot::new()` wraps the `HubspotClient` in `Arc`. Every manager (`ObjectsManager`, `EngagementsManager`, `OwnerApi`) and every `ApiCollection`, `AssociationsApiCollection`, and `BatchApiCollection` holds a clone of this Arc. There is exactly one `reqwest::Client` instance for the lifetime of the `Hubspot` struct.
 
 `HubspotClient` is private to the crate. It exposes two internal methods:
-- `begin(method, path)` — starts a `reqwest::RequestBuilder` with auth header wired up
-- `send::<R: DeserializeOwned>(request)` — sends and deserializes, mapping HTTP/JSON errors to `HubspotError`
+- `begin(method, path)` — starts a `reqwest::RequestBuilder` with the base URL (`https://{domain}/{path}`); does **not** attach auth
+- `send::<R: DeserializeOwned>(request)` — attaches `Authorization: Bearer {token}`, sends the request, and deserializes the response; maps HTTP/JSON errors to `HubspotError`
 
 ---
 
@@ -193,7 +197,7 @@ Requires edits in `src/engagements/`:
 
 ### New Built-in Association Type
 
-Add a variant with its numeric discriminant to `AssociationLinks` in `src/api_configs/types.rs`.
+Add a new variant to `AssociationLinks` in `src/api_configs/types.rs`, then update `AssociationLinks::build()` to map that variant to the correct HubSpot numeric type ID string.
 
 ---
 

@@ -51,16 +51,16 @@ Owned by `Hubspot` as `hubspot.owners`.
 ### `read()`
 
 ```rust
-pub async fn read(&self, id: &str, archived: bool) -> HubspotResult<Owner>
+pub async fn read(&self, id: &str, archived: Option<bool>) -> HubspotResult<Owner>
 ```
 
 Fetches a single owner by their HubSpot owner ID.
 
 - `id` — HubSpot owner ID (numeric string, e.g. `"12345678"`)
-- `archived` — if `true`, can retrieve archived (deactivated) owners
+- `archived` — pass `Some(true)` to retrieve archived (deactivated) owners; `None` defaults to `false`
 
 ```rust
-let owner = hubspot.owners.read("12345678", false).await?;
+let owner = hubspot.owners.read("12345678", None).await?;
 println!("{} {} <{}>", owner.first_name, owner.last_name, owner.email);
 
 if let Some(teams) = owner.teams {
