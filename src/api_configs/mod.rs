@@ -30,7 +30,9 @@ where
 {
     name: T,
     client: Arc<HubspotClient>,
+    /// API methods for managing associations to other HubSpot records.
     pub associations: AssociationsApiCollection<T>,
+    /// API methods for bulk (batch) operations.
     pub batch: BatchApiCollection<T>,
 }
 

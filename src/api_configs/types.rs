@@ -123,8 +123,10 @@ impl<Properties> HubspotRecord<Properties, OptionNotDesired, Vec<CreateAssociati
 /// The struct to create a new association between two records.
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct CreateAssociation {
+    /// The target record to associate with.
     #[serde(rename = "to")]
     pub to: AssociationTo,
+    /// The association types to apply between the two records.
     pub types: Vec<AssociationType>,
 }
 
@@ -142,7 +144,7 @@ pub struct AssociationType {
     /// You can retrieve the value through the associations API.
     #[serde(rename = "associationTypeId")]
     pub id: String,
-    // Whether the association type was created by HubSpot or a user (HUBSPOT_DEFINED and USER_DEFINED)
+    /// Whether the association type was created by HubSpot or a user (`HUBSPOT_DEFINED` or `USER_DEFINED`).
     #[serde(rename = "associationCategory")]
     pub category: String,
 }
@@ -155,13 +157,16 @@ pub struct OptionNotDesired {}
 /// Recommended use when creating the Association Struct.
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct AssociationResults {
+    /// The list of associated records.
     pub results: Vec<Association>,
 }
 
 /// An representation of an association as returned by Hubspot
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Association {
+    /// The ID of the associated record.
     pub id: String,
+    /// The type of the association.
     #[serde(alias = "type")]
     pub association_type: String,
 }
@@ -184,15 +189,21 @@ pub struct Paging {
 
 #[derive(Deserialize, Debug, Default)]
 pub struct PagingNext {
+    /// The cursor token used to fetch the next page of results.
     pub after: String,
+    /// The full URL for the next page.
     pub link: String,
 }
 
-/// An enum of Built In Hubspot Associations.
-/// To be built upon in the future.
+/// Known HubSpot built-in association type IDs.
+///
+/// Pass these to [`HubspotRecord::attach_built_in_associations`] to avoid using raw numeric IDs.
 pub enum AssociationLinks {
+    /// Association type ID 202: Note → Contact.
     NoteToContact,
+    /// Association type ID 190: Note → Company.
     NoteToCompany,
+    /// Association type ID 214: Note → Deal.
     NoteToDeal,
 }
 

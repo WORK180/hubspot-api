@@ -7,7 +7,10 @@ use crate::Hubspot;
 
 use super::client::HubspotClient;
 
-/// Hubspot api  interface.
+/// Builder for constructing a [`Hubspot`] client.
+///
+/// Obtain via [`Hubspot::builder()`]. All three fields — [`domain`](HubspotBuilder::domain),
+/// [`token`](HubspotBuilder::token), and [`portal_id`](HubspotBuilder::portal_id) — are required.
 #[derive(Default)]
 pub struct HubspotBuilder {
     client: Option<Client>,
@@ -54,19 +57,20 @@ impl HubspotBuilder {
         self
     }
 
-    // The hubspot private app token
+    /// The HubSpot Private App access token used to authenticate requests.
     pub fn token(mut self, token: &str) -> Self {
         self.token = Some(token.to_owned());
         self
     }
 
-    // The hubspot portal_id to validate the request
+    /// The HubSpot portal (account) ID. Used to scope and validate requests.
     pub fn portal_id(mut self, portal_id: &str) -> Self {
         self.portal_id = Some(portal_id.to_owned());
         self
     }
 
-    // The reqwest client to send the request
+    /// An optional custom [`reqwest::Client`] to use for HTTP requests.
+    /// If not provided, a default client is created.
     pub fn client(mut self, client: &Client) -> Self {
         self.client = Some(client.to_owned());
         self

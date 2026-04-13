@@ -6,11 +6,18 @@ use crate::api_configs::types::ToPath;
 use crate::api_configs::ApiCollection;
 use crate::client::HubspotClient;
 
+/// The CRM object types supported by this crate.
+///
+/// Each variant maps to its HubSpot API path segment via [`ToPath`].
 #[derive(Clone, Debug, Display)]
 pub enum ObjectType {
+    /// Contacts store information about an individual person.
     Contacts,
+    /// Companies store information about an individual business or organization.
     Companies,
+    /// Deals represent revenue opportunities with a contact or company.
     Deals,
+    /// Line items are individual instances of products attached to a deal.
     LineItems,
 }
 
@@ -43,6 +50,7 @@ pub struct ObjectsManager {
 }
 
 impl ObjectsManager {
+    /// Constructs a new [`ObjectsManager`], wiring each object type to the shared HTTP client.
     pub fn new(client: Arc<HubspotClient>) -> Self {
         Self {
             contacts: ApiCollection::new(ObjectType::Contacts, Arc::clone(&client)),
