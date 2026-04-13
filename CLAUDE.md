@@ -153,7 +153,7 @@ Add a new variant to `AssociationLinks` in `src/api_configs/types.rs`, then upda
 |---|---|
 | TLS | Always `rustls-tls`. Never enable `native-tls` or link OpenSSL. |
 | Timestamps | `time::OffsetDateTime` with `#[serde(with = "time::serde::rfc3339")]` |
-| Enum → URL path | `strum_macros::Display` + `#[strum(serialize_all = "snake_case")]` |
+| Enum → URL path | `strum_macros::Display` for variants; `ObjectType::LineItems` requires an explicit match arm in `ToPath` |
 | Return type | `HubspotResult<T>` (alias: `Result<T, HubspotError>`) from all public async methods |
 | HubSpot JSON fields | Mapped via `#[serde(rename = "hs_field_name")]` on struct fields |
 | HTTP client | Inject via `Arc<HubspotClient>::clone()`, never construct a new client in a nested struct |
@@ -167,7 +167,6 @@ Add a new variant to `AssociationLinks` in `src/api_configs/types.rs`, then upda
 |---|---|
 | `README.md` | Shows `.key("token")` but the builder method is `.token("...")` — fix before v0.3 |
 | `src/objects.rs` | `// TODO see if we can use strum` on `ToPath` impl — strum's `to_string()` could replace the explicit match |
-| `Cargo.toml` | `async-trait = "0.1"` is listed but not currently used in any source file |
 
 ---
 

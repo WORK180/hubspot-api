@@ -17,6 +17,7 @@ pub mod associations {
 }
 
 pub use api_configs::types;
+pub use client::error::{HubspotError, HubspotResult};
 pub use engagements::notes;
 pub use engagements::EngagementType;
 pub use objects::ObjectType;

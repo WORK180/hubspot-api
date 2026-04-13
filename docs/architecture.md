@@ -49,8 +49,8 @@ The single method maps an enum variant to the URL path segment HubSpot uses for 
 
 ```rust
 pub trait ObjectApi<T: ToPath> {
-    fn name(&self) -> &str;
-    fn path(&self) -> String;
+    fn name(&self) -> &T;
+    fn path(&self) -> String;   // default: self.name().to_path()
     fn client(&self) -> &Arc<HubspotClient>;
 }
 ```
@@ -65,11 +65,11 @@ The primary API surface for any object or engagement type:
 
 ```
 ApiCollection<T>
-├── list<P, PWH, A>(limit, after, archived) -> HubspotResult<ListResult<HubspotRecord<P,PWH,A>>>
-├── create<P, PWH, A>(record) -> HubspotResult<HubspotRecord<P,PWH,A>>
-├── read<P, PWH, A>(id, archived) -> HubspotResult<HubspotRecord<P,PWH,A>>
-├── update<P, PWH>(id, record) -> HubspotResult<HubspotRecord<P,PWH,OptionNotDesired>>
-├── archive(id) -> HubspotResult<()>
+├── list<P,PWH,A>(limit: Option<i32>, after: Option<&str>, archived: Option<bool>) -> HubspotResult<ListResult<HubspotRecord<P,PWH,A>>>
+├── create<P,PWH,A>(HubspotRecord<P, OptionNotDesired, Vec<CreateAssociation>>) -> HubspotResult<HubspotRecord<P,PWH,A>>
+├── read<P,PWH,A>(id: &str, archived: bool) -> HubspotResult<HubspotRecord<P,PWH,A>>
+├── update<P,PWH>(id: String, properties: P) -> HubspotResult<HubspotRecord<P,PWH,OptionNotDesired>>
+├── archive(id: String) -> HubspotResult<()>
 ├── associations: AssociationsApiCollection<T>
 └── batch: BatchApiCollection<T>
 ```

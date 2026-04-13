@@ -26,7 +26,7 @@ Constructed once in `Hubspot::new()` and shared via `Arc<HubspotClient>` across 
 pub(crate) fn begin(&self, method: reqwest::Method, path: &str) -> reqwest::RequestBuilder
 ```
 
-Constructs a `RequestBuilder` with the base URL (`https://{domain}/crm/v3/`) and the `Authorization: Bearer {token}` header pre-applied. All public API methods start from `begin()`.
+Constructs a `RequestBuilder` with the base URL (`https://{domain}/{path}`) and the `Authorization: Bearer {token}` header pre-applied. Callers pass the full path including version (e.g. `"crm/v3/objects/contacts"` or `"crm/v4/objects/deals"`). All public API methods start from `begin()`.
 
 #### `send`
 ```rust

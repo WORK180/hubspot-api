@@ -58,7 +58,7 @@ let hubspot = Hubspot::builder()
     .domain("api.hubapi.com")
     .token("pat-na1-...")
     .portal_id("12345678")
-    .client(client)
+    .client(&client)          // takes &reqwest::Client
     .build()?;
 ```
 
@@ -66,7 +66,7 @@ let hubspot = Hubspot::builder()
 
 ## Defining Properties
 
-Define a struct for the HubSpot properties you want returned. Field names must match the [serde field names](https://serde.rs/field-attrs.html); the crate automatically maps them to `?properties=` query parameters.
+Define a struct for the HubSpot properties you want returned. The crate automatically maps field names to `?properties=` query parameters via `serde_introspect`.
 
 ```rust
 use serde::Deserialize;
@@ -82,17 +82,11 @@ struct DealProperties {
 }
 ```
 
-HubSpot property names (like `dealname`) go in `#[serde(rename = "...")]`. Your Rust field names can be whatever you prefer.
-
 ---
 
 ## CRM Objects
 
 Available object types: `Contacts`, `Companies`, `Deals`, `LineItems`.
-
-```rust
-use hubspot::ObjectType;
-```
 
 ### Read (Get by ID)
 
@@ -107,12 +101,16 @@ println!("{}", deal.properties.name);
 
 ### List
 
+`list` takes `archived: Option<bool>` — pass `Some(false)` or `None` (defaults to false).
+
 ```rust
+use hubspot::types::OptionNotDesired;
+
 let results = hubspot.objects.deals
     .list::<DealProperties, OptionNotDesired, OptionNotDesired>(
-        Some(10),   // limit
-        None,       // after cursor (pagination)
-        false,      // include archived
+        Some(10),       // limit
+        None,           // after cursor (pagination)
+        Some(false),    // archived
     )
     .await?;
 
@@ -128,37 +126,45 @@ if let Some(paging) = results.paging {
 
 ### Create
 
+Use `with_properties_and_associations` — this initialises the associations vec required by the v4 create endpoint.
+
 ```rust
 use hubspot::types::{HubspotRecord, OptionNotDesired};
 
-let payload = HubspotRecord::<DealProperties, OptionNotDesired, OptionNotDesired>
-    ::with_properties(DealProperties {
+let payload =
+    HubspotRecord::with_properties_and_associations(DealProperties {
         name: "New Deal".to_string(),
         amount: Some("5000".to_string()),
         close_date: None,
     });
 
-let created = hubspot.objects.deals.create(payload).await?;
+let created = hubspot.objects.deals
+    .create::<DealProperties, OptionNotDesired, OptionNotDesired>(payload)
+    .await?;
 println!("Created deal ID: {}", created.id);
 ```
 
 ### Update
 
-```rust
-let payload = HubspotRecord::<DealProperties, OptionNotDesired, OptionNotDesired>
-    ::with_properties(DealProperties {
-        name: "Updated Deal Name".to_string(),
-        amount: None,
-        close_date: None,
-    });
+`update` takes the record ID and the properties struct directly.
 
-let updated = hubspot.objects.deals.update("123", payload).await?;
+```rust
+let updated = hubspot.objects.deals
+    .update::<DealProperties, OptionNotDesired>(
+        "123".to_string(),
+        DealProperties {
+            name: "Updated Deal Name".to_string(),
+            amount: None,
+            close_date: None,
+        },
+    )
+    .await?;
 ```
 
 ### Archive (Soft Delete)
 
 ```rust
-hubspot.objects.deals.archive("123").await?;
+hubspot.objects.deals.archive("123".to_string()).await?;
 ```
 
 ---
@@ -167,37 +173,55 @@ hubspot.objects.deals.archive("123").await?;
 
 ### Batch Read
 
-```rust
-let ids = vec!["123".to_string(), "456".to_string(), "789".to_string()];
+`batch.read` takes explicit property/association struct instances alongside the IDs.
 
-let batch = hubspot.objects.deals
+```rust
+use hubspot::types::OptionNotDesired;
+
+let result = hubspot.objects.deals
     .batch
-    .read::<DealProperties, OptionNotDesired, OptionNotDesired>(ids)
+    .read::<DealProperties, OptionNotDesired, OptionNotDesired>(
+        vec!["123", "456", "789"],
+        DealProperties { name: String::new(), amount: None, close_date: None },
+        OptionNotDesired {},
+        OptionNotDesired {},
+        Some(false),
+    )
     .await?;
 
-for deal in batch.results {
+for deal in result.results {
     println!("{}: {}", deal.id, deal.properties.name);
 }
 ```
 
 ### Batch Create
 
+`batch.create` takes a `Vec` of your properties struct (not `HubspotRecord`).
+
 ```rust
-use hubspot::types::HubspotRecord;
-
-let records = vec![
-    HubspotRecord::with_properties(DealProperties { name: "Deal A".into(), .. }),
-    HubspotRecord::with_properties(DealProperties { name: "Deal B".into(), .. }),
-];
-
-let result = hubspot.objects.deals.batch.create(records).await?;
+let result = hubspot.objects.deals
+    .batch
+    .create(vec![
+        DealProperties { name: "Deal A".to_string(), amount: None, close_date: None },
+        DealProperties { name: "Deal B".to_string(), amount: None, close_date: None },
+    ])
+    .await?;
 ```
 
 ### Batch Update
 
+`batch.update` applies the same properties to all record IDs.
+
 ```rust
-let updates = vec![("123".to_string(), DealProperties { name: "Updated A".into(), .. })];
-let result = hubspot.objects.deals.batch.update(updates).await?;
+use hubspot::types::OptionNotDesired;
+
+let result = hubspot.objects.deals
+    .batch
+    .update::<DealProperties, OptionNotDesired>(
+        vec!["123".to_string(), "456".to_string()],
+        DealProperties { name: "New Name".to_string(), amount: None, close_date: None },
+    )
+    .await?;
 ```
 
 ### Batch Archive
@@ -212,51 +236,46 @@ hubspot.objects.deals.batch.archive(vec!["123", "456"]).await?;
 
 ### List Associations
 
-```rust
-use hubspot::ObjectType;
+`list` takes `to_object_type` as a `&str` path segment (e.g. `"contacts"`).
 
-// List all contacts associated with deal 123
+```rust
 let associations = hubspot.objects.deals
     .associations
-    .list("123", ObjectType::Contacts)
+    .list("123", "contacts", None, None)
     .await?;
 
 for assoc in associations.results {
-    println!("Contact ID: {}, type: {}", assoc.to_object_id, assoc.association_types[0].type_id);
+    println!("Contact ID: {}, type_id: {}", assoc.to_object_id, assoc.association_types[0].type_id);
 }
 ```
 
-### Create Association (Built-in Type)
+### Create Association
 
-Use `AssociationLinks` for HubSpot's built-in association types:
-
-```rust
-use hubspot::types::AssociationLinks;
-
-// Associate note 789 with contact 456
-hubspot.engagements.notes
-    .associations
-    .create("789", "456", AssociationLinks::NoteToContact)
-    .await?;
-```
-
-### Create Association (Custom Type)
+`create` takes `to_object_type` (any type implementing `ToPath`), the target ID, and a vec of `AssociationCreationDetails`.
 
 ```rust
 use hubspot::associations::AssociationCreationDetails;
+use hubspot::ObjectType;
 
 hubspot.objects.deals
     .associations
-    .create("123", "456", AssociationCreationDetails {
-        category: "USER_DEFINED".to_string(),
-        type_id: 99,
-    })
+    .create(
+        "123",
+        ObjectType::Contacts,
+        "456",
+        vec![AssociationCreationDetails {
+            category: "HUBSPOT_DEFINED".to_string(),
+            type_id: 3,  // Deal → Contact built-in type ID
+        }],
+    )
     .await?;
 ```
 
 ### Delete Association
 
 ```rust
+use hubspot::ObjectType;
+
 hubspot.objects.deals
     .associations
     .delete("123", ObjectType::Contacts, "456")
@@ -269,24 +288,31 @@ hubspot.objects.deals
 
 ```rust
 use hubspot::notes::NoteProperties;
-use hubspot::types::{HubspotRecord, OptionNotDesired, AssociationLinks};
+use hubspot::types::{HubspotRecord, AssociationLinks};
 
-// Build a note associated with a contact and a deal
-let mut note =
-    HubspotRecord::with_properties_and_associations(NoteProperties::new("Call went well.".to_string()));
-
-note.attach_built_in_associations(AssociationLinks::NoteToContact, vec!["456".to_string()]);
-note.attach_built_in_associations(AssociationLinks::NoteToDeal, vec!["123".to_string()]);
+let note = HubspotRecord::with_properties_and_associations(
+    NoteProperties::new("Call went well.".to_string()),
+);
+let note = note.attach_built_in_associations(
+    AssociationLinks::NoteToContact,
+    vec!["456".to_string()],
+);
+let note = note.attach_built_in_associations(
+    AssociationLinks::NoteToDeal,
+    vec!["123".to_string()],
+);
 
 let created = hubspot.engagements.notes.create(note).await?;
 println!("Note ID: {}", created.id);
 ```
 
-`NoteProperties::new(body)` automatically sets `hs_timestamp` to the current time.
+`NoteProperties::new(body)` automatically sets `hs_timestamp` to the current UTC time.
 
 ---
 
 ## Owners
+
+`read` takes `archived: Option<bool>`.
 
 ```rust
 let owner = hubspot.owners.read("12345678", Some(false)).await?;
@@ -303,11 +329,12 @@ if let Some(teams) = owner.teams {
 
 ## Reading with PropertiesWithHistory
 
-When you need the change history of a property, provide a type for the `PWH` parameter:
+`properties_with_history` is always present (populated via `#[serde(default)]`), not an `Option`.
 
 ```rust
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Default, Deserialize)]
 struct DealHistory {
+    #[serde(rename = "amount")]
     amount: Option<Vec<serde_json::Value>>,
 }
 
@@ -321,6 +348,8 @@ println!("{:?}", deal.properties_with_history.amount);
 ---
 
 ## Reading with Associations Inline
+
+`associations` is always present (populated via `#[serde(default)]`). Implement `Default` on your associations struct.
 
 ```rust
 #[derive(Debug, Default, Deserialize)]
@@ -342,10 +371,16 @@ for contact in deal.associations.contacts.results {
 
 ## Error Handling
 
+`HubspotError` is re-exported from the crate root.
+
 ```rust
+use hubspot::HubspotError;
+
 match hubspot.objects.deals.read::<DealProperties, _, _>("bad-id", false).await {
     Ok(deal) => println!("{}", deal.properties.name),
-    Err(e) => eprintln!("Request failed: {e}"),
+    Err(HubspotError::Http(e)) => eprintln!("HTTP error: {e}"),
+    Err(HubspotError::Json(e)) => eprintln!("JSON parse error: {e}"),
+    Err(HubspotError::Hubspot(msg)) => eprintln!("HubSpot API error: {msg}"),
 }
 ```
 
@@ -353,7 +388,7 @@ match hubspot.objects.deals.read::<DealProperties, _, _>("bad-id", false).await 
 |---|---|
 | `HubspotError::Http(reqwest::Error)` | Network failure, timeout, non-success HTTP status |
 | `HubspotError::Json(serde_json::Error)` | Response body could not be deserialized |
-| `HubspotError::Hubspot(String)` | HubSpot returned a structured error (message extracted from `HubspotErrorResponse`) |
+| `HubspotError::Hubspot(String)` | HubSpot returned a structured error |
 
 ---
 
@@ -362,11 +397,13 @@ match hubspot.objects.deals.read::<DealProperties, _, _>("bad-id", false).await 
 If you need to select the object type at runtime, use `get_collection()`:
 
 ```rust
-use hubspot::ObjectType;
+use hubspot::{ObjectType, types::OptionNotDesired};
 
 let object_type = ObjectType::Contacts;
 let collection = hubspot.objects.get_collection(object_type);
-let results = collection.list::<MyProps, _, _>(Some(10), None, Some(false)).await?;
+let results = collection
+    .list::<MyProps, OptionNotDesired, OptionNotDesired>(Some(10), None, Some(false))
+    .await?;
 ```
 
 ---

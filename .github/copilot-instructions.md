@@ -91,7 +91,7 @@ Use `OptionNotDesired {}` as a zero-cost sentinel for type parameters the caller
 
 - **TLS**: Always `rustls-tls`. Do not enable `native-tls` or `openssl`.
 - **Time**: Use `time::OffsetDateTime` with `#[serde(with = "time::serde::rfc3339")]` for timestamps.
-- **Enum display**: Use `strum_macros::Display` + `#[strum(serialize_all = "snake_case")]` for enum variants that map to URL path strings.
+- **Enum display**: Use `strum_macros::Display` on enum variants that map to URL path strings. Note: `ObjectType::LineItems` requires an explicit `to_path()` match arm rather than relying on the default lowercase display.
 - **Error type**: Return `HubspotResult<T>` (alias for `Result<T, HubspotError>`) from all public async methods.
 - **Field naming**: HubSpot API uses camelCase query params (`propertiesWithHistory`) and snake_case JSON fields (mapped via `#[serde(rename = "...")]`).
 

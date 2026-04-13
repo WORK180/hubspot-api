@@ -85,13 +85,21 @@ Sets `timestamp` to `OffsetDateTime::now_utc()` automatically. Use this for crea
 
 ```rust
 use hubspot::notes::NoteProperties;
-use hubspot::types::{HubspotRecord, OptionNotDesired, AssociationLinks};
+use hubspot::types::{HubspotRecord, AssociationLinks};
+use hubspot::associations::AssociationCreationDetails;
+use hubspot::ObjectType;
 
-let mut note = HubspotRecord::<NoteProperties, OptionNotDesired, OptionNotDesired>
-    ::with_properties_and_associations(NoteProperties::new("Follow-up completed.".into()));
-
-note.attach_built_in_associations(AssociationLinks::NoteToContact, vec!["456".to_string()]);
-note.attach_built_in_associations(AssociationLinks::NoteToDeal, vec!["123".to_string()]);
+let note = HubspotRecord::with_properties_and_associations(
+    NoteProperties::new("Follow-up completed.".into()),
+);
+let note = note.attach_built_in_associations(
+    AssociationLinks::NoteToContact,
+    vec!["456".to_string()],
+);
+let note = note.attach_built_in_associations(
+    AssociationLinks::NoteToDeal,
+    vec!["123".to_string()],
+);
 
 let created = hubspot.engagements.notes.create(note).await?;
 ```
