@@ -68,13 +68,9 @@ Implements `std::error::Error` and `std::fmt::Display`.
 ### Error Handling Example
 
 ```rust
-use hubspot::client::error::HubspotError;
-
 match hubspot.objects.contacts.read::<MyProps, _, _>("bad-id", false).await {
     Ok(record) => { /* use record */ }
-    Err(HubspotError::Hubspot(msg)) => eprintln!("HubSpot API error: {msg}"),
-    Err(HubspotError::Http(err)) => eprintln!("HTTP error: {err}"),
-    Err(HubspotError::Json(err)) => eprintln!("Deserialization error: {err}"),
+    Err(err) => eprintln!("HubSpot request failed: {err}"),
 }
 ```
 

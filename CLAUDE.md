@@ -143,7 +143,7 @@ Encodes HubSpot's built-in association type IDs as variants to eliminate magic n
 
 ### Adding a New Built-in Association Type
 
-Add a variant to `AssociationLinks` in `src/api_configs/types.rs` with the HubSpot numeric type ID as the discriminant value.
+Add a new variant to `AssociationLinks` in `src/api_configs/types.rs`, then update `AssociationLinks::build()` to map that variant to the correct HubSpot numeric type ID.
 
 ---
 

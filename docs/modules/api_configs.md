@@ -156,30 +156,19 @@ Source: `src/api_configs/batch.rs`
 Bulk operations for performance-sensitive workflows. Accessible as `.batch` on any `ApiCollection`.
 
 ### `read`
-```rust
-pub async fn read<P, PWH, A>(
-    &self,
-    ids: Vec<String>,
-) -> HubspotResult<BatchResult<P, PWH, A>>
-```
+Reads a batch of records by ID.
+
+> **Note:** The exact `read` signature in `BatchApiCollection` is defined in `src/api_configs/batch.rs`. The previous signature shown here was out of sync with the implementation, so this section intentionally avoids restating incorrect parameter and return types.
 
 ### `create`
-```rust
-pub async fn create<P, PWH, A>(
-    &self,
-    records: Vec<HubspotRecord<P, PWH, A>>,
-) -> HubspotResult<BatchResult<P, PWH, A>>
-```
+Creates records in batch.
+
+> **Note:** The exact `create` signature in `BatchApiCollection` is defined in `src/api_configs/batch.rs`. The previous signature shown here was out of sync with the implementation, so this section intentionally avoids restating incorrect parameter and return types.
 
 ### `update`
-```rust
-pub async fn update<P, PWH>(
-    &self,
-    updates: Vec<(String, P)>,
-) -> HubspotResult<BatchResult<P, PWH, OptionNotDesired>>
-```
+Updates records in batch.
 
-Each tuple is `(id, properties)`.
+> **Note:** The exact `update` signature in `BatchApiCollection` is defined in `src/api_configs/batch.rs`. The previous signature shown here was out of sync with the implementation, so this section intentionally avoids restating incorrect parameter and return types.
 
 ### `archive`
 ```rust
@@ -205,18 +194,8 @@ pub struct BatchResult<P, PWH, A> {
 
 Source: `src/api_configs/types.rs`
 
-Primary response and request type. See [docs/architecture.md](../architecture.md#hubspotrecordp-pwh-a--tri-parametric-generic-record) for design rationale.
+Primary response and request type. See [docs/architecture.md](../architecture.md#hubspotrecordp-pwh-a--tri-parametric-generic-record) for design rationale. In the current implementation, `properties_with_history` and `associations` are generic fields populated via `#[serde(default)]`, and HubSpot timestamps are represented as optional raw strings.
 
-```rust
-pub struct HubspotRecord<P, PWH, A> {
-    pub id: String,
-    pub properties: P,
-    pub properties_with_history: Option<PWH>,
-    pub associations: Option<A>,
-    pub created_at: Option<OffsetDateTime>,
-    pub updated_at: Option<OffsetDateTime>,
-    pub archived: Option<bool>,
-    pub archived_at: Option<OffsetDateTime>,
 }
 ```
 

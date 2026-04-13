@@ -100,7 +100,6 @@ Use `OptionNotDesired {}` as a zero-cost sentinel for type parameters the caller
 ## Known Issues
 
 - **README mismatch**: The README shows `.key("token")` but the actual builder method is `.token("...")`. Use `.token()` in all new code and documentation.
-- **`async-trait` dependency**: Listed in `Cargo.toml` but no async traits are currently in use. It can be dropped when cleaning up.
 - **`ObjectType::ToPath` TODO**: `src/objects.rs` has a comment `// TODO see if we can use strum` — strum's `to_string()` would work but the current explicit match is fine.
 
 ---

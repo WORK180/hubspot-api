@@ -272,8 +272,8 @@ use hubspot::notes::NoteProperties;
 use hubspot::types::{HubspotRecord, OptionNotDesired, AssociationLinks};
 
 // Build a note associated with a contact and a deal
-let mut note = HubspotRecord::<NoteProperties, OptionNotDesired, OptionNotDesired>
-    ::with_properties_and_associations(NoteProperties::new("Call went well.".to_string()));
+let mut note =
+    HubspotRecord::with_properties_and_associations(NoteProperties::new("Call went well.".to_string()));
 
 note.attach_built_in_associations(AssociationLinks::NoteToContact, vec!["456".to_string()]);
 note.attach_built_in_associations(AssociationLinks::NoteToDeal, vec!["123".to_string()]);
@@ -289,7 +289,7 @@ println!("Note ID: {}", created.id);
 ## Owners
 
 ```rust
-let owner = hubspot.owners.read("12345678", false).await?;
+let owner = hubspot.owners.read("12345678", Some(false)).await?;
 println!("{} {} <{}>", owner.first_name, owner.last_name, owner.email);
 
 if let Some(teams) = owner.teams {
@@ -315,9 +315,7 @@ let deal = hubspot.objects.deals
     .read::<DealProperties, DealHistory, OptionNotDesired>("123", false)
     .await?;
 
-if let Some(history) = deal.properties_with_history {
-    println!("{:?}", history.amount);
-}
+println!("{:?}", deal.properties_with_history.amount);
 ```
 
 ---
@@ -325,19 +323,18 @@ if let Some(history) = deal.properties_with_history {
 ## Reading with Associations Inline
 
 ```rust
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Default, Deserialize)]
 struct DealAssociations {
-    contacts: Option<hubspot::types::AssociationResults>,
+    #[serde(default)]
+    contacts: hubspot::types::AssociationResults,
 }
 
 let deal = hubspot.objects.deals
     .read::<DealProperties, OptionNotDesired, DealAssociations>("123", false)
     .await?;
 
-if let Some(assocs) = deal.associations {
-    for contact in assocs.contacts.unwrap_or_default().results {
-        println!("Associated contact ID: {}", contact.id);
-    }
+for contact in deal.associations.contacts.results {
+    println!("Associated contact ID: {}", contact.id);
 }
 ```
 
@@ -346,13 +343,9 @@ if let Some(assocs) = deal.associations {
 ## Error Handling
 
 ```rust
-use hubspot::client::error::HubspotError;
-
 match hubspot.objects.deals.read::<DealProperties, _, _>("bad-id", false).await {
     Ok(deal) => println!("{}", deal.properties.name),
-    Err(HubspotError::Http(e)) => eprintln!("HTTP error: {e}"),
-    Err(HubspotError::Json(e)) => eprintln!("JSON parse error: {e}"),
-    Err(HubspotError::Hubspot(msg)) => eprintln!("HubSpot API error: {msg}"),
+    Err(e) => eprintln!("Request failed: {e}"),
 }
 ```
 
@@ -373,7 +366,7 @@ use hubspot::ObjectType;
 
 let object_type = ObjectType::Contacts;
 let collection = hubspot.objects.get_collection(object_type);
-let results = collection.list::<MyProps, _, _>(Some(10), None, false).await?;
+let results = collection.list::<MyProps, _, _>(Some(10), None, Some(false)).await?;
 ```
 
 ---

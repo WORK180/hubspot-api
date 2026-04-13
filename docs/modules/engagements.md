@@ -40,7 +40,19 @@ Owned by `Hubspot`. Each field is an `ApiCollection<EngagementType>` pre-configu
 ```rust
 hubspot.engagements.notes.create(note_record).await?;
 hubspot.engagements.notes.read("789", false).await?;
-hubspot.engagements.notes.associations.create("789", "456", AssociationLinks::NoteToContact).await?;
+hubspot
+    .engagements
+    .notes
+    .associations
+    .create(
+        "789",
+        ObjectType::Contacts,
+        vec![AssociationCreationDetails {
+            to_object_id: "456".to_string(),
+            association_type: AssociationLinks::NoteToContact,
+        }],
+    )
+    .await?;
 ```
 
 ---

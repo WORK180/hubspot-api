@@ -91,12 +91,12 @@ hubspot.engagements.notes.create(...)
 pub struct HubspotRecord<P, PWH, A> {
     pub id: String,
     pub properties: P,
-    pub properties_with_history: Option<PWH>,
-    pub associations: Option<A>,
-    pub created_at: Option<OffsetDateTime>,
-    pub updated_at: Option<OffsetDateTime>,
+    pub properties_with_history: PWH,
+    pub associations: A,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
     pub archived: Option<bool>,
-    pub archived_at: Option<OffsetDateTime>,
+    pub archived_at: Option<String>,
 }
 ```
 
