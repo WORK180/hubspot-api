@@ -25,5 +25,4 @@ reqwest = { version = "0.12", default-features = false, features = [
 time = { version = "0.3", features = ["std", "serde", "serde-well-known"] }
 
 [dev-dependencies]
-dotenvy = "0.15"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "time"] }

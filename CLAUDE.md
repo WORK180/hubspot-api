@@ -68,7 +68,7 @@ Tri-parametric generic record. Type parameters:
 - `PWH` — PropertiesWithHistory (or `OptionNotDesired {}` sentinel)
 - `A` — Associations (or `OptionNotDesired {}` sentinel)
 
-`OptionNotDesired` is a unit struct that implements `Serialize + Deserialize + Default`. It deserializes to `None` / an empty value without allocating, making unused type parameters truly zero-cost.
+`OptionNotDesired` is a unit struct (`pub struct OptionNotDesired {}`) that implements `Serialize + Deserialize + Default`. It satisfies unused type parameters at zero cost — the struct carries no data and deserializes as an empty object, signalling to the caller that the field was not requested.
 
 ### `serde_introspect` Auto-Query Building
 ```rust

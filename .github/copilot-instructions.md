@@ -1,13 +1,8 @@
 # Copilot Workspace Instructions — hubspot-api
 
-## Crate Purpose
+See [CLAUDE.md](../CLAUDE.md) for the full workspace instructions, architecture overview, module map, conventions, and extension guide.
 
-This is `hubspot` (v0.2.5) — an unofficial async Rust client library for the HubSpot CRM REST API.
-Authentication is via **Private App tokens** (Bearer header). TLS is **rustls-only** (no OpenSSL).
-
-Supported domains:
-
-- **CRM Objects** — `Contacts`, `Companies`, `Deals`, `LineItems` (CRUD + batch + associations)
+<!--
 - **Engagements** — `Notes` (extensible to tasks, meetings, calls)
 - **Owners** — read HubSpot users by ID
 
@@ -113,3 +108,4 @@ Use `OptionNotDesired {}` as a zero-cost sentinel for type parameters the caller
 - [Module: engagements](../docs/modules/engagements.md)
 - [Module: owners](../docs/modules/owners.md)
 - [Module: client & errors](../docs/modules/client.md)
+-->
