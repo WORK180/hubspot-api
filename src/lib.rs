@@ -17,14 +17,18 @@ pub mod associations {
 }
 
 pub use api_configs::types;
+pub use client::error::{HubspotError, HubspotResult};
 pub use engagements::notes;
 pub use engagements::EngagementType;
 pub use objects::ObjectType;
 use owners::OwnerApi;
 
-// A Rust implementation of the Hubspot CRM API
+/// An unofficial async Rust client for the [HubSpot CRM API](https://developers.hubspot.com/docs/guides/crm/understanding-the-crm).
+///
+/// Construct via [`Hubspot::builder()`].
 #[derive(Clone, Debug)]
 pub struct Hubspot {
+    /// The HubSpot portal (account) ID.
     pub portal_id: String,
     /// Objects represent types of relationships or processes.
     pub objects: ObjectsManager,
@@ -48,7 +52,7 @@ impl Hubspot {
         }
     }
 
-    /// Create Hubspot client
+    /// Returns a builder for constructing a [`Hubspot`] client.
     pub fn builder() -> HubspotBuilder {
         HubspotBuilder::new()
     }

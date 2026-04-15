@@ -39,16 +39,21 @@ impl From<reqwest::Error> for HubspotError {
     }
 }
 
-/// Hubspot error response.
+/// The error response body returned by HubSpot on 4xx/5xx responses.
 #[derive(Deserialize, Debug)]
 pub struct HubspotErrorResponse {
+    /// A human-readable description of the error.
     pub message: String,
+    /// Additional context about which properties caused the error.
     pub context: HubspotErrorContext,
+    /// The HubSpot error category (e.g. `VALIDATION_ERROR`).
     pub category: String,
 }
 
+/// Contextual detail about which properties triggered a HubSpot error.
 #[derive(Deserialize, Debug)]
 pub struct HubspotErrorContext {
+    /// The property names that caused the error.
     pub properties: Vec<String>,
 }
 

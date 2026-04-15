@@ -26,12 +26,12 @@ pub struct Owner {
     pub first_name: String,
     /// Owner last name
     pub last_name: String,
-    // The user ID of the owner
+    /// The HubSpot user ID of the owner.
     pub user_id: i64,
     /// The date the owner was created
     #[serde(with = "time::serde::rfc3339")]
     pub created_at: OffsetDateTime,
-    // The date the owner was last updated
+    /// The date the owner was last updated.
     #[serde(with = "time::serde::rfc3339")]
     pub updated_at: OffsetDateTime,
     /// Whether or not the owner has been archived

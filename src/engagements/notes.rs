@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
+/// Properties for a HubSpot Note engagement.
+///
+/// Use [`NoteProperties::new()`] to construct with the current timestamp set automatically.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct NoteProperties {
     /// The note's text content, limited to 65,536 characters.
@@ -13,6 +16,8 @@ pub struct NoteProperties {
 }
 
 impl NoteProperties {
+    /// Creates a new [`NoteProperties`] with the given body text.
+    /// Sets `timestamp` to the current UTC time.
     pub fn new(body: String) -> Self {
         Self {
             body,

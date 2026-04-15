@@ -24,7 +24,7 @@ pub struct Association {
 /// An association type that represents the relationship between two records.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AssociationTypes {
-    // Whether the association type was created by HubSpot or a user (HUBSPOT_DEFINED and USER_DEFINED)
+    /// Whether the association type was created by HubSpot or a user (`HUBSPOT_DEFINED` or `USER_DEFINED`).
     pub category: String,
     /// The numeric ID for that association type.
     #[serde(alias = "typeId")]
@@ -60,7 +60,9 @@ pub struct CreatedAssociationResult {
     pub labels: Vec<String>,
 }
 
-// Association Api Collection
+/// API collection for managing associations between two HubSpot records.
+///
+/// Accessible as `.associations` on any [`ApiCollection`](crate::api_configs::ApiCollection).
 #[derive(Clone, Debug)]
 pub struct AssociationsApiCollection<T>(T, Arc<HubspotClient>);
 

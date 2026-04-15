@@ -1,0 +1,21 @@
+# hubspot
+
+> An unofficial async Rust client library for the HubSpot CRM REST API. Supports contacts, companies, deals, line items, notes, and owners. Authentication via Private App tokens (Bearer). TLS via rustls (no OpenSSL).
+
+- Crate: https://crates.io/crates/hubspot
+- API docs: https://docs.rs/hubspot
+
+## Documentation
+
+- [API Reference](docs/api.md): Consumer quick-start — installation, auth, CRUD, batch, associations, engagements, owners, error handling
+- [Architecture](docs/architecture.md): Contributor deep-dive — design goals, module dependency flow, core abstractions, v3/v4 endpoint breakdown
+- [Module: api_configs](docs/modules/api_configs.md): Generic API layer — ApiCollection, AssociationsApiCollection, BatchApiCollection, HubspotRecord, ToPath
+- [Module: objects](docs/modules/objects.md): ObjectType enum, ObjectsManager — contacts, companies, deals, line items
+- [Module: engagements](docs/modules/engagements.md): EngagementType enum, EngagementsManager, NoteProperties
+- [Module: owners](docs/modules/owners.md): Owner, Team, OwnerApi
+- [Module: client](docs/modules/client.md): HubspotError, HubspotResult, HTTP transport layer
+
+## Optional
+
+- [README](README.md): Installation and basic usage example
+- [CLAUDE.md](CLAUDE.md): Build commands and extension guide for AI coding agents

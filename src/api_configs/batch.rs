@@ -107,7 +107,9 @@ where
     pub links: HashMap<String, String>,
 }
 
-// Batch Api Collection
+/// API collection for bulk (batch) operations on HubSpot records.
+///
+/// Accessible as `.batch` on any [`ApiCollection`](crate::api_configs::ApiCollection).
 #[derive(Clone, Debug)]
 pub struct BatchApiCollection<T>(T, Arc<HubspotClient>);
 

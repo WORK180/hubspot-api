@@ -9,8 +9,12 @@ use crate::{
     client::HubspotClient,
 };
 
+/// The engagement types supported by this crate.
+///
+/// Each variant maps to its HubSpot API path segment via [`ToPath`].
 #[derive(Clone, Debug, Display)]
 pub enum EngagementType {
+    /// Notes add information to the record timeline.
     Notes,
 }
 
@@ -32,6 +36,7 @@ pub struct EngagementsManager {
 }
 
 impl EngagementsManager {
+    /// Constructs a new [`EngagementsManager`], wiring each engagement type to the shared HTTP client.
     pub fn new(client: Arc<HubspotClient>) -> Self {
         Self {
             notes: ApiCollection::<EngagementType>::new(EngagementType::Notes, Arc::clone(&client)),
